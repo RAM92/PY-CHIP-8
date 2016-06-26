@@ -122,6 +122,25 @@ class CPU(object):
             OpcodeDefinition('8XY0', self.__store_vy_in_vx),
             OpcodeDefinition('7XNN', self.__add_nn_to_vx),
             OpcodeDefinition('8XY4', self.__add_vy_to_vx),
+            OpcodeDefinition('8XY5', self.__subtract_vy_from_vx),
+            OpcodeDefinition('8XY7', self.__store_vy_sub_vx_in_vx),
+
+            OpcodeDefinition('8XY2', self.__vx_and_vy_store_in_vx),
+            OpcodeDefinition('8XY1', self.__vx_or_vy_store_in_vx),
+            OpcodeDefinition('8XY3', self.__vx_xor_vy_store_in_vx),
+
+            OpcodeDefinition('8XY6', self.__shift_vy_right_store_in_vx),
+            OpcodeDefinition('8XYE', self.__shift_vy_left_store_in_vx),
+
+            OpcodeDefinition('CXNN', self.__set_vx_random_masked),
+
+            OpcodeDefinition('1NNN', self.__jump_to_nnn),
+            OpcodeDefinition('BNNN', self.__jump_to_nnn_plus_v0),
+
+            OpcodeDefinition('2NNN', self.__exec_subroutine),
+            OpcodeDefinition('00EE', self.__return_from_subroutine),
+
+            # OpcodeDefinition('0NNN', lambda: raise NotImplementedError),
         )
 
     def __add_nn_to_vx_modulo(self, inst):
@@ -140,6 +159,42 @@ class CPU(object):
             self.vf.value = 1
         else:
             self.vf.value = 0
+
+    def __subtract_vy_from_vx(self, inst):
+        raise NotImplementedError
+
+    def __store_vy_sub_vx_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __vx_and_vy_store_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __vx_or_vy_store_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __vx_xor_vy_store_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __shift_vy_right_store_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __shift_vy_left_store_in_vx(self, inst):
+        raise NotImplementedError
+
+    def __set_vx_random_masked(self, inst):
+        raise NotImplementedError
+
+    def __jump_to_nnn(self, inst):
+        raise NotImplementedError
+
+    def __jump_to_nnn_plus_v0(self, inst):
+        raise NotImplementedError
+
+    def __exec_subroutine(self, inst):
+        raise NotImplementedError
+
+    def __return_from_subroutine(self, inst):
+        raise NotImplementedError
 
     def fetch_instruction(self):
         raise NotImplementedError
