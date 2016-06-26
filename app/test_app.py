@@ -1,5 +1,28 @@
 import pytest
-from app import Register, CPU, OpcodeDefinitionMapper
+from app import Register, CPU, OpcodeDefinition, Instruction
+
+
+class TestInstruction:
+
+    def test_stores_nibble_0_on_e(self):
+        i = Instruction(0x1234)
+        assert i.e == 0x4
+
+    def test_stores_nibble_1_on_y(self):
+        i = Instruction(0x1234)
+        assert i.y == 0x3
+
+    def test_stores_nibble_2_on_x(self):
+        i = Instruction(0x1234)
+        assert i.x == 0x2
+
+    def test_stores_nibble_3_on_f(self):
+        i = Instruction(0x1234)
+        assert i.f == 0x1
+
+    def test_exposes_lower_two_nibbles_as_nn(self):
+        i = Instruction(0x1234)
+        assert i.nn == 0x34
 
 
 class TestRegister(object):
@@ -50,38 +73,19 @@ class TestOpCodes():
     def test_adds_nn_to_vx_modulo(self, cpu):
         cpu.v[0].value = 0xff
         cpu(0x7001)
-        assert cpu.v[0] == 0x00
+        assert cpu.v[0].value == 0x00
 
-    # # 8XY4 Add the value of register VY to register VX
-    # def test_add_vy_to_vx_store_vx(self, cpu):
-    #     cpu('')
-
-#
-# class TestCrazyInstruction():
-#
-#     def test_it_kinda_works(self):
-#         a = 0x8129
-#         b = 0x8349
-#         c = 0x8569
-#
-#         inst_definition = '8__9'
-#
-#         x = b
-#         assert (inst_definition[0] == '_' or int(inst_definition[0]) << 12 == x & 0xf000) and\
-#                (inst_definition[1] == '_' or int(inst_definition[1]) << 8 == x & 0x0f00) and\
-#                (inst_definition[2] == '_' or int(inst_definition[2]) << 4 == x & 0x00f0) and\
-#                (inst_definition[3] == '_' or int(inst_definition[3]) == x & 0x000f)
-
+    # 8XY4
+    def test_adds_vy_to_vx(self, cpu):
+        cpu.v[0].value = 10
+        cpu.v[1].value = 10
+        cpu(0x8104)
+        assert cpu.v[1].value == 20
 
 class TestOpcodeDefinitionMapper:
 
-    def test_defaults_false(self):
-        x = OpcodeDefinitionMapper()
-        assert x.responds_to(0x0000) is False
-        assert x.responds_to(0xFFFF) is False
-
     def test_only_responds_to_appropriate_input(self):
-        x = OpcodeDefinitionMapper('1xx4')
+        x = OpcodeDefinition('1xx4', lambda: None)
         assert x.responds_to(0x1234) is True
         assert x.responds_to(0x1324) is True
         assert x.responds_to(0x1004) is True
