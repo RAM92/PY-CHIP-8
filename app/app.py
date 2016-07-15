@@ -2,6 +2,8 @@
 # http://mattmik.com/files/chip8/mastering/chip8.html
 
 
+import random
+
 
 class Register(object):
 
@@ -73,10 +75,10 @@ class OpcodeDefinition:
 
 class Memory(list):
 
-    def __init__(self):
-        self.regions = [
-            ((0, 0), self.get_random, 'interpreter'),
-        ]
+    def __init__(self, data=[]):
+        interpreter = [random.randint(0, 255) for x in range(0x200)]
+        super(Memory, self).__init__(interpreter)
+        self.extend(data)
 
 
 class CPU(object):
@@ -88,9 +90,10 @@ class CPU(object):
     def vf(self):
         return self.v[0xf]
 
-    def __init__(self):
+    def __init__(self, data=[]):
         self.v=[]
-        self.pc=0
+        self.pc=0x200
+        self.memory = Memory(data)
         for x in range(0, 16):
             self.v.append(Register())
 
@@ -168,7 +171,6 @@ class CPU(object):
         self.v[inst.x].value = self.v[inst.y].value << 1
 
     def set_vx_random_masked(self, inst):
-        import random
         self.v[inst.x].value = random.randint(0, 255) & inst.nn
 
     def jump_to_nnn(self, inst):

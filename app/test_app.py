@@ -1,5 +1,5 @@
 import pytest
-from app import Register, CPU, OpcodeDefinition, Instruction
+from app import Register, CPU, OpcodeDefinition, Instruction, Memory
 
 
 class TestInstruction:
@@ -42,6 +42,22 @@ class TestRegister(object):
         assert r.value == 0xff
 
 
+class TestMemory:
+
+    def test_it_isinstance_list(self):
+        m = Memory()
+        assert isinstance(m, list)
+
+    def test_it_has_dummy_interpreter_in_first_0x200(self):
+        m = Memory()
+        len(m) == 0x200
+
+    def test_it_appends_anything_supplied_to_it(self):
+        m = Memory([1, 2, 3, 4])
+        assert len(m) == 0x204
+        assert m[0x203] == 4
+
+
 @pytest.fixture
 def cpu():
     return CPU()
@@ -52,8 +68,11 @@ class TestCPU:
     def test_has_16_registers(self, cpu):
         assert len(cpu.v) == 16
 
-    def test_pc_initializes_to_0(self, cpu):
-        assert cpu.pc == 0
+    def test_pc_initializes_to_0x200(self, cpu):
+        assert cpu.pc == 0x200
+
+    def test_has_memory(self, cpu):
+        assert isinstance(cpu.memory, Memory)
 
 class TestOpCodes():
 
