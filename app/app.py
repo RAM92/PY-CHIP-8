@@ -168,7 +168,8 @@ class CPU(object):
         self.v[inst.x].value = self.v[inst.y].value << 1
 
     def set_vx_random_masked(self, inst):
-        raise NotImplementedError
+        import random
+        self.v[inst.x].value = random.randint(0, 255) & inst.nn
 
     def jump_to_nnn(self, inst):
         raise NotImplementedError

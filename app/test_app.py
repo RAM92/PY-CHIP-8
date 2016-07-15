@@ -161,6 +161,13 @@ class TestOpCodes():
         assert cpu.v[1].value == 0b00111000
         assert cpu.vf.value == 0
 
+    # CXNN
+    def test_random_number_masked(self, cpu, monkeypatch):
+        import random
+        monkeypatch.setattr(random, 'randint', lambda x, y: 123)
+        cpu(0xC00F)
+        assert cpu.v[0].value == 0b1011
+
 
 class TestOpcodeDefinitionMapper:
 
