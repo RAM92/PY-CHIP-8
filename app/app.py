@@ -171,19 +171,21 @@ class CPU(object):
         self.__bool_vf(self.v[inst.y].value > vy_pre_op)
 
     def __vx_and_vy_store_in_vx(self, inst):
-        raise NotImplementedError
+        self.v[inst.x].value = self.v[inst.y].value & self.v[inst.x].value
 
     def __vx_or_vy_store_in_vx(self, inst):
-        raise NotImplementedError
+        self.v[inst.x].value = self.v[inst.y].value | self.v[inst.x].value
 
     def __vx_xor_vy_store_in_vx(self, inst):
-        raise NotImplementedError
+        self.v[inst.x].value = self.v[inst.y].value ^ self.v[inst.x].value
 
     def __shift_vy_right_store_in_vx(self, inst):
-        raise NotImplementedError
+        self.vf.value = self.v[inst.y].value & 1
+        self.v[inst.x].value = self.v[inst.y].value >> 1
 
     def __shift_vy_left_store_in_vx(self, inst):
-        raise NotImplementedError
+        self.vf.value = 1 if self.v[inst.y].value & 0x80 else 0
+        self.v[inst.x].value = self.v[inst.y].value << 1
 
     def __set_vx_random_masked(self, inst):
         raise NotImplementedError

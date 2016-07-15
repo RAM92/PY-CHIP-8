@@ -118,6 +118,50 @@ class TestOpCodes():
         assert cpu.v[1].value == 10
         assert cpu.vf.value == 1
 
+    # 8XY1
+    def test_vx_or_vy(self, cpu):
+        cpu.v[0].value = 0b10101010
+        cpu.v[1].value = 0b01010101
+        cpu(0x8101)
+        assert cpu.v[1].value == 0b11111111
+
+    # 8XY2
+    def test_vx_and_vy(self, cpu):
+        cpu.v[0].value = 0b10101110
+        cpu.v[1].value = 0b01010101
+        cpu(0x8102)
+        assert cpu.v[1].value == 0b00000100
+
+    # 8XY3
+    def test_vx_xor_vy(self, cpu):
+        cpu.v[0].value = 0b10101110
+        cpu.v[1].value = 0b01010101
+        cpu(0x8103)
+        assert cpu.v[1].value == 0b11111011
+
+    # 8XY6
+    def test_shift_right(self, cpu):
+        cpu.v[0].value = 0b01110001
+        cpu(0x8106)
+        assert cpu.v[1].value == 0b00111000
+        assert cpu.vf.value == 1
+        cpu.v[0].value = 0b00111000
+        cpu(0x8106)
+        assert cpu.v[1].value == 0b00011100
+        assert cpu.vf.value == 0
+
+    # 8XYE
+    def test_shift_left(self, cpu):
+        cpu.v[0].value = 0b10001110
+        cpu(0x810E)
+        assert cpu.v[1].value == 0b00011100
+        assert cpu.vf.value == 1
+        cpu.v[0].value = 0b00011100
+        cpu(0x810E)
+        assert cpu.v[1].value == 0b00111000
+        assert cpu.vf.value == 0
+
+
 class TestOpcodeDefinitionMapper:
 
     @pytest.mark.parametrize(['definition', 'input', 'responds'], (
