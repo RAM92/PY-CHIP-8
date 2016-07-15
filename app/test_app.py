@@ -46,6 +46,15 @@ class TestRegister(object):
 def cpu():
     return CPU()
 
+
+class TestCPU:
+
+    def test_has_16_registers(self, cpu):
+        assert len(cpu.v) == 16
+
+    def test_pc_initializes_to_0(self, cpu):
+        assert cpu.pc == 0
+
 class TestOpCodes():
 
     # 6XNN Store number NN in register VX
