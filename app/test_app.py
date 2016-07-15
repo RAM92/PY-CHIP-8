@@ -80,15 +80,58 @@ class TestOpCodes():
         cpu.v[0].value = 10
         cpu.v[1].value = 10
         cpu(0x8104)
+        assert cpu.v[0].value == 10
         assert cpu.v[1].value == 20
+
+    # 8XY5
+    def test_subtract_vy_from_vx(self, cpu):
+        cpu.v[0].value = 10
+        cpu.v[1].value = 10
+        cpu(0x8105)
+        assert cpu.v[0].value == 0
+        assert cpu.v[1].value == 10
+
+    # 8XY5
+    def test_subtract_vy_from_vx_borrow(self, cpu):
+        cpu.v[0].value = 10
+        cpu.v[1].value = 11
+        cpu(0x8105)
+        assert cpu.v[0].value == 255
+        assert cpu.v[1].value == 11
+        assert cpu.vf.value == 1
+
+    # 8XY7
+    def test_subtract_vy_from_vx(self, cpu):
+        cpu.v[0].value = 10
+        cpu.v[1].value = 10
+        cpu(0x8107)
+        assert cpu.v[0].value == 0
+        assert cpu.v[1].value == 10
+        assert cpu.vf.value == 0
+
+    # 8XY7
+    def test_subtract_vy_from_vx_borrow(self, cpu):
+        cpu.v[0].value = 11
+        cpu.v[1].value = 10
+        cpu(0x8107)
+        assert cpu.v[0].value == 255
+        assert cpu.v[1].value == 10
+        assert cpu.vf.value == 1
 
 class TestOpcodeDefinitionMapper:
 
-    def test_only_responds_to_appropriate_input(self):
-        x = OpcodeDefinition('1xx4', lambda: None)
-        assert x.responds_to(0x1234) is True
-        assert x.responds_to(0x1324) is True
-        assert x.responds_to(0x1004) is True
-        assert x.responds_to(0x1FF4) is True
-        assert x.responds_to(0xFFFF) is False
-        assert x.responds_to(0x0000) is False
+    @pytest.mark.parametrize(['definition', 'input', 'responds'], (
+            ('1xx4', 0x1234, True),
+            ('1xx4', 0x1324, True),
+            ('1xx4', 0x1004, True),
+            ('1xx4', 0x1FF4, True),
+            ('1xx4', 0xFFFF, False),
+            ('1xx4', 0x0000, False),
+            ('1xx4', 0x0004, False),
+            ('1xx4', 0x1000, False),
+            ('Foo0', 0xF000, True),
+            ('Foo0', 0xF00B, False),
+    ))
+    def test_only_responds_to_appropriate_input(self, definition, input, responds):
+        x = OpcodeDefinition(definition, lambda: None)
+        assert x.responds_to(input) is responds

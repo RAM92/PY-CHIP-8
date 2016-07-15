@@ -48,20 +48,17 @@ class OpcodeDefinition:
         self.str = format_str
         self.cb = cb
 
-        match_number = 0
-        mask = 0
+        self.match_number = 0
+        self.mask = 0
 
         for i, ch in enumerate(reversed(format_str)):
             bit_position = i * 4
             try:
                 x = int(ch, 16)
-                mask |= (0xf << bit_position)
-                match_number |= (x << bit_position)
+                self.mask |= (0xf << bit_position)
+                self.match_number |= (x << bit_position)
             except ValueError:
                 x = 0
-
-        self.match_number = match_number
-        self.mask = mask
 
     def responds_to(self, x):
         return x & self.mask == self.match_number
@@ -140,8 +137,14 @@ class CPU(object):
             OpcodeDefinition('2NNN', self.__exec_subroutine),
             OpcodeDefinition('00EE', self.__return_from_subroutine),
 
-            # OpcodeDefinition('0NNN', lambda: raise NotImplementedError),
+            OpcodeDefinition('0NNN', self.__unsupported_operation),
         )
+
+    def __bool_vf(self, b):
+        self.vf.value = 1 if b else 0
+
+    def __unsupported_operation(self, inst):
+        raise NotImplementedError
 
     def __add_nn_to_vx_modulo(self, inst):
         self.v[inst.x].value = inst.nn
@@ -155,16 +158,17 @@ class CPU(object):
     def __add_vy_to_vx(self, inst):
         vx_pre_op = self.v[inst.x]
         self.v[inst.x].value += self.v[inst.y].value
-        if self.v[inst.x] < vx_pre_op:
-            self.vf.value = 1
-        else:
-            self.vf.value = 0
+        self.__bool_vf(self.v[inst.x] < vx_pre_op)
 
     def __subtract_vy_from_vx(self, inst):
-        raise NotImplementedError
+        vx_pre_op = self.v[inst.x].value
+        self.v[inst.x].value -= self.v[inst.y].value
+        self.__bool_vf(self.v[inst.x].value > vx_pre_op)
 
     def __store_vy_sub_vx_in_vx(self, inst):
-        raise NotImplementedError
+        vy_pre_op = self.v[inst.y].value
+        self.v[inst.y].value = self.v[inst.x].value - vy_pre_op
+        self.__bool_vf(self.v[inst.y].value > vy_pre_op)
 
     def __vx_and_vy_store_in_vx(self, inst):
         raise NotImplementedError
