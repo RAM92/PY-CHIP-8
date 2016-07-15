@@ -186,7 +186,7 @@ class CPU(object):
         raise NotImplementedError
 
     def fetch_instruction(self):
-        raise NotImplementedError
+        return self.memory[self.pc]
 
     @staticmethod
     def decode_instruction(data):
@@ -196,12 +196,20 @@ class CPU(object):
         for handler in self.supported_operations:
             handler(inst.data)
 
-    def __call__(self, x):
+    def __call__(self, x=None):
         if isinstance(x, int):
             self.execute_instruction(
                 self.decode_instruction(x)
             )
         elif isinstance(x, Instruction):
             self.execute_instruction(x)
+        elif x is None:
+            self.execute_instruction(
+                self.decode_instruction(
+                    self.fetch_instruction()
+                )
+            )
         else:
             raise TypeError
+
+        self.pc += 1

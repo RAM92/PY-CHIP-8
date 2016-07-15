@@ -60,7 +60,7 @@ class TestMemory:
 
 @pytest.fixture
 def cpu():
-    return CPU()
+    return CPU([0x6000 for x in range(0xfff)])
 
 
 class TestCPU:
@@ -73,6 +73,14 @@ class TestCPU:
 
     def test_has_memory(self, cpu):
         assert isinstance(cpu.memory, Memory)
+
+    def test_increments_pc_after_executing_inst(self, cpu):
+        cpu()
+        assert cpu.pc == 0x201
+        cpu()
+        assert cpu.pc == 0x202
+        cpu()
+        assert cpu.pc == 0x203
 
 class TestOpCodes():
 
