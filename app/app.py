@@ -35,6 +35,7 @@ class Instruction(object):
         self.x  = (data & 0x0f00) >> 8
         self.y  = (data & 0x00f0) >> 4
         self.e  =  data & 0x000f
+        self.nnn=  data & 0x0fff
 
     @property
     def nn(self):
@@ -174,10 +175,10 @@ class CPU(object):
         self.v[inst.x].value = random.randint(0, 255) & inst.nn
 
     def jump_to_nnn(self, inst):
-        raise NotImplementedError
+        self.pc = inst.nnn - 1
 
     def jump_to_nnn_plus_v0(self, inst):
-        raise NotImplementedError
+        self.pc = inst.nnn + self.v[0].value - 1
 
     def exec_subroutine(self, inst):
         raise NotImplementedError

@@ -204,6 +204,17 @@ class TestOpCodes():
         cpu(0xC00F)
         assert cpu.v[0].value == 0b1011
 
+    # 1NNN
+    def test_jump_nnn(self, cpu):
+        cpu(0x1123)
+        assert cpu.pc == 0x123
+
+    # BNNN
+    def test_jump_nnn_plus_v0(self, cpu):
+        cpu.v[0].value = 0x23
+        cpu(0xB100)
+        assert cpu.pc == 0x123
+
 
 class TestOpcodeDefinitionMapper:
 
