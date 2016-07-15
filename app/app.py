@@ -29,7 +29,7 @@ class Instruction(object):
 
     def __init__(self, data=0):
         self.data = data
-        self.f  = (data & 0xf000) >> 12 #f for "First byte"
+        self.f  = (data & 0xf000) >> 12 #f for "First nibble"
         self.x  = (data & 0x0f00) >> 8
         self.y  = (data & 0x00f0) >> 4
         self.e  =  data & 0x000f
@@ -78,26 +78,6 @@ class Memory(list):
             ((0, 0), self.get_random, 'interpreter'),
         ]
 
-    @staticmethod
-    def get_random(self):
-        return 0
-
-
-# def get_supported_operations():
-#     ops = []
-#
-#     def for_spec(spec):
-#         def for_spec_inner(fn):
-#             ops.append({spec: fn})
-#             return fn
-#
-#         return for_spec_inner
-#
-#     @for_spec('1234')
-#     def foo(cpu, inst):
-#         pass
-#
-#     return ops
 
 class CPU(object):
     #program starts at 0x200
@@ -115,91 +95,91 @@ class CPU(object):
             self.v.append(Register())
 
         self.supported_operations = (
-            OpcodeDefinition('6XNN', self.__add_nn_to_vx_modulo),
-            OpcodeDefinition('8XY0', self.__store_vy_in_vx),
-            OpcodeDefinition('7XNN', self.__add_nn_to_vx),
-            OpcodeDefinition('8XY4', self.__add_vy_to_vx),
-            OpcodeDefinition('8XY5', self.__subtract_vy_from_vx),
-            OpcodeDefinition('8XY7', self.__store_vy_sub_vx_in_vx),
+            OpcodeDefinition('6XNN', self.add_nn_to_vx_modulo),
+            OpcodeDefinition('8XY0', self.store_vy_in_vx),
+            OpcodeDefinition('7XNN', self.add_nn_to_vx),
+            OpcodeDefinition('8XY4', self.add_vy_to_vx),
+            OpcodeDefinition('8XY5', self.subtract_vy_from_vx),
+            OpcodeDefinition('8XY7', self.store_vy_sub_vx_in_vx),
 
-            OpcodeDefinition('8XY2', self.__vx_and_vy_store_in_vx),
-            OpcodeDefinition('8XY1', self.__vx_or_vy_store_in_vx),
-            OpcodeDefinition('8XY3', self.__vx_xor_vy_store_in_vx),
+            OpcodeDefinition('8XY2', self.vx_and_vy_store_in_vx),
+            OpcodeDefinition('8XY1', self.vx_or_vy_store_in_vx),
+            OpcodeDefinition('8XY3', self.vx_xor_vy_store_in_vx),
 
-            OpcodeDefinition('8XY6', self.__shift_vy_right_store_in_vx),
-            OpcodeDefinition('8XYE', self.__shift_vy_left_store_in_vx),
+            OpcodeDefinition('8XY6', self.shift_vy_right_store_in_vx),
+            OpcodeDefinition('8XYE', self.shift_vy_left_store_in_vx),
 
-            OpcodeDefinition('CXNN', self.__set_vx_random_masked),
+            OpcodeDefinition('CXNN', self.set_vx_random_masked),
 
-            OpcodeDefinition('1NNN', self.__jump_to_nnn),
-            OpcodeDefinition('BNNN', self.__jump_to_nnn_plus_v0),
+            OpcodeDefinition('1NNN', self.jump_to_nnn),
+            OpcodeDefinition('BNNN', self.jump_to_nnn_plus_v0),
 
-            OpcodeDefinition('2NNN', self.__exec_subroutine),
-            OpcodeDefinition('00EE', self.__return_from_subroutine),
+            OpcodeDefinition('2NNN', self.exec_subroutine),
+            OpcodeDefinition('00EE', self.return_from_subroutine),
 
-            OpcodeDefinition('0NNN', self.__unsupported_operation),
+            OpcodeDefinition('0NNN', self.unsupported_operation),
         )
 
-    def __bool_vf(self, b):
+    def bool_vf(self, b):
         self.vf.value = 1 if b else 0
 
-    def __unsupported_operation(self, inst):
+    def unsupported_operation(self, inst):
         raise NotImplementedError
 
-    def __add_nn_to_vx_modulo(self, inst):
+    def add_nn_to_vx_modulo(self, inst):
         self.v[inst.x].value = inst.nn
 
-    def __store_vy_in_vx(self, inst):
+    def store_vy_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value
 
-    def __add_nn_to_vx(self, inst):
+    def add_nn_to_vx(self, inst):
         self.v[inst.x].value += inst.nn
 
-    def __add_vy_to_vx(self, inst):
+    def add_vy_to_vx(self, inst):
         vx_pre_op = self.v[inst.x]
         self.v[inst.x].value += self.v[inst.y].value
-        self.__bool_vf(self.v[inst.x] < vx_pre_op)
+        self.bool_vf(self.v[inst.x] < vx_pre_op)
 
-    def __subtract_vy_from_vx(self, inst):
+    def subtract_vy_from_vx(self, inst):
         vx_pre_op = self.v[inst.x].value
         self.v[inst.x].value -= self.v[inst.y].value
-        self.__bool_vf(self.v[inst.x].value > vx_pre_op)
+        self.bool_vf(self.v[inst.x].value > vx_pre_op)
 
-    def __store_vy_sub_vx_in_vx(self, inst):
+    def store_vy_sub_vx_in_vx(self, inst):
         vy_pre_op = self.v[inst.y].value
         self.v[inst.y].value = self.v[inst.x].value - vy_pre_op
-        self.__bool_vf(self.v[inst.y].value > vy_pre_op)
+        self.bool_vf(self.v[inst.y].value > vy_pre_op)
 
-    def __vx_and_vy_store_in_vx(self, inst):
+    def vx_and_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value & self.v[inst.x].value
 
-    def __vx_or_vy_store_in_vx(self, inst):
+    def vx_or_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value | self.v[inst.x].value
 
-    def __vx_xor_vy_store_in_vx(self, inst):
+    def vx_xor_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value ^ self.v[inst.x].value
 
-    def __shift_vy_right_store_in_vx(self, inst):
+    def shift_vy_right_store_in_vx(self, inst):
         self.vf.value = self.v[inst.y].value & 1
         self.v[inst.x].value = self.v[inst.y].value >> 1
 
-    def __shift_vy_left_store_in_vx(self, inst):
+    def shift_vy_left_store_in_vx(self, inst):
         self.vf.value = 1 if self.v[inst.y].value & 0x80 else 0
         self.v[inst.x].value = self.v[inst.y].value << 1
 
-    def __set_vx_random_masked(self, inst):
+    def set_vx_random_masked(self, inst):
         raise NotImplementedError
 
-    def __jump_to_nnn(self, inst):
+    def jump_to_nnn(self, inst):
         raise NotImplementedError
 
-    def __jump_to_nnn_plus_v0(self, inst):
+    def jump_to_nnn_plus_v0(self, inst):
         raise NotImplementedError
 
-    def __exec_subroutine(self, inst):
+    def exec_subroutine(self, inst):
         raise NotImplementedError
 
-    def __return_from_subroutine(self, inst):
+    def return_from_subroutine(self, inst):
         raise NotImplementedError
 
     def fetch_instruction(self):
@@ -222,7 +202,3 @@ class CPU(object):
             self.execute_instruction(x)
         else:
             raise TypeError
-
-# c = CPU()
-
-# c.execute_instruction(Instruction(0x7012))
