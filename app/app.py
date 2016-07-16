@@ -95,6 +95,7 @@ class CPU(object):
         self.v=[]
         self.pc=0x200
         self.memory = Memory(data)
+        self.stack = []
         for x in range(0, 16):
             self.v.append(Register())
 
@@ -123,6 +124,12 @@ class CPU(object):
 
             OpcodeDefinition('0NNN', self.unsupported_operation),
         )
+
+    def push_stack(self):
+        self.stack.append(self.pc)
+
+    def pop_stack(self):
+        self.pc = self.stack.pop()
 
     def bool_vf(self, b):
         self.vf.value = 1 if b else 0

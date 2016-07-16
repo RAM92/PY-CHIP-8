@@ -82,6 +82,26 @@ class TestCPU:
         cpu()
         assert cpu.pc == 0x203
 
+    def test_stack_stores_pc(self, cpu):
+        cpu.pc = 100
+        cpu.push_stack()
+        cpu.pc = 200
+        cpu.push_stack()
+        cpu.pc = 300
+        cpu.push_stack()
+        cpu.stack == [100, 200, 300]
+
+    def test_pc_restored_from_stack(self, cpu):
+        cpu.stack = [100, 200, 300]
+        cpu.pop_stack()
+        assert cpu.pc == 300
+        cpu.pop_stack()
+        assert cpu.pc == 200
+        cpu.pop_stack()
+        assert cpu.pc == 100
+
+
+
 class TestOpCodes():
 
     # 6XNN Store number NN in register VX
