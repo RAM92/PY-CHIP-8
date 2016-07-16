@@ -1,5 +1,5 @@
 import pytest
-from app import Register, CPU, OpcodeDefinition, Instruction, Memory
+from app import Register, CPU, OperationDefinition, Instruction, Memory
 
 
 class TestInstruction:
@@ -251,5 +251,5 @@ class TestOpcodeDefinitionMapper:
             ('Foo0', 0xF00B, False),
     ))
     def test_only_responds_to_appropriate_input(self, definition, input, responds):
-        x = OpcodeDefinition(definition, lambda: None)
+        x = OperationDefinition(definition, lambda: None)
         assert x.responds_to(input) is responds

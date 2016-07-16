@@ -42,7 +42,7 @@ class Instruction(object):
         return self.data & 0xff
 
 
-class OpcodeDefinition:
+class OperationDefinition:
 
     match_number = 0xffff
     mask = 0
@@ -100,29 +100,29 @@ class CPU(object):
             self.v.append(Register())
 
         self.supported_operations = (
-            OpcodeDefinition('6XNN', self.add_nn_to_vx_modulo),
-            OpcodeDefinition('8XY0', self.store_vy_in_vx),
-            OpcodeDefinition('7XNN', self.add_nn_to_vx),
-            OpcodeDefinition('8XY4', self.add_vy_to_vx),
-            OpcodeDefinition('8XY5', self.subtract_vy_from_vx),
-            OpcodeDefinition('8XY7', self.store_vy_sub_vx_in_vx),
+            OperationDefinition('6XNN', self.add_nn_to_vx_modulo),
+            OperationDefinition('8XY0', self.store_vy_in_vx),
+            OperationDefinition('7XNN', self.add_nn_to_vx),
+            OperationDefinition('8XY4', self.add_vy_to_vx),
+            OperationDefinition('8XY5', self.subtract_vy_from_vx),
+            OperationDefinition('8XY7', self.store_vy_sub_vx_in_vx),
 
-            OpcodeDefinition('8XY2', self.vx_and_vy_store_in_vx),
-            OpcodeDefinition('8XY1', self.vx_or_vy_store_in_vx),
-            OpcodeDefinition('8XY3', self.vx_xor_vy_store_in_vx),
+            OperationDefinition('8XY2', self.vx_and_vy_store_in_vx),
+            OperationDefinition('8XY1', self.vx_or_vy_store_in_vx),
+            OperationDefinition('8XY3', self.vx_xor_vy_store_in_vx),
 
-            OpcodeDefinition('8XY6', self.shift_vy_right_store_in_vx),
-            OpcodeDefinition('8XYE', self.shift_vy_left_store_in_vx),
+            OperationDefinition('8XY6', self.shift_vy_right_store_in_vx),
+            OperationDefinition('8XYE', self.shift_vy_left_store_in_vx),
 
-            OpcodeDefinition('CXNN', self.set_vx_random_masked),
+            OperationDefinition('CXNN', self.set_vx_random_masked),
 
-            OpcodeDefinition('1NNN', self.jump_to_nnn),
-            OpcodeDefinition('BNNN', self.jump_to_nnn_plus_v0),
+            OperationDefinition('1NNN', self.jump_to_nnn),
+            OperationDefinition('BNNN', self.jump_to_nnn_plus_v0),
 
-            OpcodeDefinition('2NNN', self.exec_subroutine),
-            OpcodeDefinition('00EE', self.return_from_subroutine),
+            OperationDefinition('2NNN', self.exec_subroutine),
+            OperationDefinition('00EE', self.return_from_subroutine),
 
-            OpcodeDefinition('0NNN', self.unsupported_operation),
+            OperationDefinition('0NNN', self.unsupported_operation),
         )
 
     def push_stack(self):
