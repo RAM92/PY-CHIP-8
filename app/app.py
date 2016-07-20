@@ -69,9 +69,9 @@ class OperationDefinition:
     def __call__(self, x):
         if self.responds_to(x):
             self.cb(Instruction(x))
-            return 1
+            return True
         else:
-            return 0
+            return False
 
 
 class Memory(list):
@@ -125,6 +125,9 @@ class CPU(object):
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
+    def inc_pc(self):
+        self.pc += 1
+
     def push_stack(self):
         self.stack.append(self.pc)
 
@@ -135,63 +138,79 @@ class CPU(object):
         self.vf.value = 1 if b else 0
 
     def unsupported_operation(self, inst):
-        raise NotImplementedError
+        raise NotImplementedError('No instruction for: {0:x}'.format(inst.data))
 
     def add_nn_to_vx_modulo(self, inst):
         self.v[inst.x].value = inst.nn
+        self.inc_pc()
 
     def store_vy_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value
+        self.inc_pc()
 
     def add_nn_to_vx(self, inst):
         self.v[inst.x].value += inst.nn
+        self.inc_pc()
 
     def add_vy_to_vx(self, inst):
         vx_pre_op = self.v[inst.x]
         self.v[inst.x].value += self.v[inst.y].value
         self.bool_vf(self.v[inst.x] < vx_pre_op)
+        self.inc_pc()
 
     def subtract_vy_from_vx(self, inst):
         vx_pre_op = self.v[inst.x].value
         self.v[inst.x].value -= self.v[inst.y].value
         self.bool_vf(self.v[inst.x].value > vx_pre_op)
+        self.inc_pc()
 
     def store_vy_sub_vx_in_vx(self, inst):
         vy_pre_op = self.v[inst.y].value
         self.v[inst.y].value = self.v[inst.x].value - vy_pre_op
         self.bool_vf(self.v[inst.y].value > vy_pre_op)
+        self.inc_pc()
 
     def vx_and_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value & self.v[inst.x].value
+        self.inc_pc()
 
     def vx_or_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value | self.v[inst.x].value
+        self.inc_pc()
 
     def vx_xor_vy_store_in_vx(self, inst):
         self.v[inst.x].value = self.v[inst.y].value ^ self.v[inst.x].value
+        self.inc_pc()
 
     def shift_vy_right_store_in_vx(self, inst):
         self.vf.value = self.v[inst.y].value & 1
         self.v[inst.x].value = self.v[inst.y].value >> 1
+        self.inc_pc()
 
     def shift_vy_left_store_in_vx(self, inst):
         self.vf.value = 1 if self.v[inst.y].value & 0x80 else 0
         self.v[inst.x].value = self.v[inst.y].value << 1
+        self.inc_pc()
 
     def set_vx_random_masked(self, inst):
         self.v[inst.x].value = random.randint(0, 255) & inst.nn
+        self.inc_pc()
+
+    def _set_pc_new_address(self, x):
+        self.pc = x
 
     def jump_to_nnn(self, inst):
-        self.pc = inst.nnn - 1
+        self._set_pc_new_address(inst.nnn)
 
     def jump_to_nnn_plus_v0(self, inst):
-        self.pc = inst.nnn + self.v[0].value - 1
+        self._set_pc_new_address(inst.nnn + self.v[0].value)
 
     def exec_subroutine(self, inst):
-        raise NotImplementedError
+        self.push_stack()
+        self._set_pc_new_address(inst.nnn)
 
     def return_from_subroutine(self, inst):
-        raise NotImplementedError
+        self.pop_stack()
 
     def fetch_instruction(self):
         return self.memory[self.pc]
@@ -202,7 +221,9 @@ class CPU(object):
 
     def execute_instruction(self, inst):
         for handler in self.supported_operations:
-            handler(inst.data)
+            success = handler(inst.data)
+            if success:
+                break
 
     def __call__(self, x=None):
         if isinstance(x, int):
@@ -219,5 +240,3 @@ class CPU(object):
             )
         else:
             raise TypeError
-
-        self.pc += 1

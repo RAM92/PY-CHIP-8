@@ -2,7 +2,7 @@ import pytest
 from app import Register, CPU, OperationDefinition, Instruction, Memory
 
 
-class TestInstruction:
+class TestInstruction(object):
 
     def test_stores_nibble_0_on_e(self):
         i = Instruction(0x1234)
@@ -234,6 +234,26 @@ class TestOpCodes():
         cpu.v[0].value = 0x23
         cpu(0xB100)
         assert cpu.pc == 0x123
+
+    # 2NNN
+    def test_exec_subroutine(self, cpu):
+        cpu(0x2500)
+        assert cpu.stack == [0x200]
+        assert cpu.pc == 0x500
+
+    # 00EE
+    def test_return_from_subroutine(self, cpu):
+        cpu.pc = 0x500
+        cpu.stack = [0x200, 0x300, 0x400]
+        cpu(0x00EE)
+        assert cpu.pc == 0x400
+        assert cpu.stack == [0x200, 0x300]
+        cpu(0x00EE)
+        assert cpu.pc == 0x300
+        assert cpu.stack == [0x200]
+        cpu(0x00EE)
+        assert cpu.pc == 0x200
+        assert cpu.stack == []
 
 
 class TestOpcodeDefinitionMapper:
