@@ -21,10 +21,13 @@ class Register(object):
     def __eq__(self, other):
         if isinstance(other, int):
             return self.value == other
-        elif isinstance(Register):
+        elif isinstance(other, Register):
             return self.value == other.value
         else:
             raise TypeError
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class Instruction(object):
@@ -122,6 +125,11 @@ class CPU(object):
             OperationDefinition('2NNN', self.exec_subroutine),
             OperationDefinition('00EE', self.return_from_subroutine),
 
+            OperationDefinition('3XNN', self.skip_vx_eq_nn),
+            OperationDefinition('5XY0', self.skip_vx_eq_vy),
+            OperationDefinition('4XNN', self.skip_vx_neq_nn),
+            OperationDefinition('9XY0', self.skip_vx_neq_vy),
+
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
@@ -211,6 +219,23 @@ class CPU(object):
 
     def return_from_subroutine(self, inst):
         self.pop_stack()
+
+    def _double_inc_pc_when(self, condition):
+        if condition:
+            self.inc_pc()
+        self.inc_pc()
+
+    def skip_vx_eq_nn(self, inst):
+        self._double_inc_pc_when(self.v[inst.x] == inst.nn)
+
+    def skip_vx_eq_vy(self, inst):
+        self._double_inc_pc_when(self.v[inst.x] == self.v[inst.y])
+
+    def skip_vx_neq_nn(self, inst):
+        self._double_inc_pc_when(self.v[inst.x] != inst.nn)
+
+    def skip_vx_neq_vy(self, inst):
+        self._double_inc_pc_when(self.v[inst.x] != self.v[inst.y])
 
     def fetch_instruction(self):
         return self.memory[self.pc]

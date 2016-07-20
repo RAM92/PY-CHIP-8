@@ -255,6 +255,58 @@ class TestOpCodes():
         assert cpu.pc == 0x200
         assert cpu.stack == []
 
+    #3XNN
+    def test_skip_vx_eq_nn__equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu(0x3033)
+        assert cpu.pc == 0x202
+
+    #3XNN
+    def test_skip_vx_eq_nn__not_equal(self, cpu):
+        cpu.v[0].value = 0xff
+        cpu(0x3033)
+        assert cpu.pc == 0x201
+
+    #5XY0
+    def test_skip_vx_eq_vy__equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu.v[1].value = 0x33
+        cpu(0x5010)
+        assert cpu.pc == 0x202
+
+    #5XY0
+    def test_skip_vx_eq_vy__not_equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu.v[1].value = 0x66
+        cpu(0x5010)
+        assert cpu.pc == 0x201
+
+    #4XNN
+    def test_skip_vx_neq_nn__not_equal(self, cpu):
+        cpu.v[0].value = 0xff
+        cpu(0x4033)
+        assert cpu.pc == 0x202
+
+    #4XNN
+    def test_skip_vx_neq_nn__equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu(0x4033)
+        assert cpu.pc == 0x201
+
+    #9XY0
+    def test_skip_vx_neq_vy__not_equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu.v[1].value = 0x66
+        cpu(0x9010)
+        assert cpu.pc == 0x202
+
+    #9XY0
+    def test_skip_vx_neq_vy__equal(self, cpu):
+        cpu.v[0].value = 0x33
+        cpu.v[1].value = 0x33
+        cpu(0x9010)
+        assert cpu.pc == 0x201
+
 
 class TestOpcodeDefinitionMapper:
 
