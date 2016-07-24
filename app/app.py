@@ -18,16 +18,25 @@ class Register(object):
     def value(self, x):
         self._value = 0xff & x
 
-    def __eq__(self, other):
+    def _normalize_other(self, other):
         if isinstance(other, int):
-            return self.value == other
+            return other
         elif isinstance(other, Register):
-            return self.value == other.value
+            return  other.value
         else:
             raise TypeError
 
+    def __eq__(self, other):
+        return self.value == self._normalize_other(other)
+
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __gt__(self, other):
+        return self.value > self._normalize_other(other)
+
+    def __lt__(self, other):
+        return self.value > self._normalize_other(other)
 
 
 class Instruction(object):
@@ -103,7 +112,7 @@ class CPU(object):
             self.v.append(Register())
 
         self.supported_operations = (
-            OperationDefinition('6XNN', self.add_nn_to_vx_modulo),
+            OperationDefinition('6XNN', self.store_nn_in_vx),
             OperationDefinition('8XY0', self.store_vy_in_vx),
             OperationDefinition('7XNN', self.add_nn_to_vx),
             OperationDefinition('8XY4', self.add_vy_to_vx),
@@ -148,7 +157,7 @@ class CPU(object):
     def unsupported_operation(self, inst):
         raise NotImplementedError('No instruction for: {0:x}'.format(inst.data))
 
-    def add_nn_to_vx_modulo(self, inst):
+    def store_nn_in_vx(self, inst):
         self.v[inst.x].value = inst.nn
         self.inc_pc()
 
