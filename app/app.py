@@ -2,7 +2,7 @@
 # http://mattmik.com/files/chip8/mastering/chip8.html
 
 
-import random
+import random, threading, time
 
 
 class Register(object):
@@ -10,13 +10,13 @@ class Register(object):
     def __init__(self, value=0):
         self.value=value
 
-    @property
-    def value(self):
+    def get_value(self):
         return self._value
 
-    @value.setter
-    def value(self, x):
+    def set_value(self, x):
         self._value = 0xff & x
+
+    value = property(get_value, set_value)
 
     def _normalize_other(self, other):
         if isinstance(other, int):
@@ -37,6 +37,29 @@ class Register(object):
 
     def __lt__(self, other):
         return self.value > self._normalize_other(other)
+
+
+class TimerRegister(Register):
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.thread = threading.Thread(target=self.run)
+        
+    def set_value(self, x):
+        super(TimerRegister, self).set_value(x)
+        if not self.thread.is_alive():
+            self.thread.start()
+
+    value = property(Register.get_value, set_value)
+
+    def run(self):
+        while True:
+            with self.lock:
+                print(self.value)
+                if self.value == 0:
+                    return
+                self.value -= 1
+            time.sleep(1)
 
 
 class Instruction(object):
