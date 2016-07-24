@@ -2,7 +2,9 @@
 # http://mattmik.com/files/chip8/mastering/chip8.html
 
 
-import random, threading, time
+import random, datetime
+
+import math
 
 
 class Register(object):
@@ -41,25 +43,27 @@ class Register(object):
 
 class TimerRegister(Register):
 
+    target_time = 0
+
     def __init__(self):
-        self.lock = threading.Lock()
-        self.thread = threading.Thread(target=self.run)
-        
+        super(TimerRegister, self).__init__()
+
+    @staticmethod
+    def get_now_ticks():
+        return datetime.datetime.now().timestamp()
+
+    def get_value(self):
+        now = self.get_now_ticks()
+        if now > self.target_time:
+            return 0
+        else:
+            return int(self.target_time - now)
+
     def set_value(self, x):
-        super(TimerRegister, self).set_value(x)
-        if not self.thread.is_alive():
-            self.thread.start()
+        self.target_time = self.get_now_ticks() + (x & 0xff)
 
-    value = property(Register.get_value, set_value)
+    value = property(get_value, set_value)
 
-    def run(self):
-        while True:
-            with self.lock:
-                print(self.value)
-                if self.value == 0:
-                    return
-                self.value -= 1
-            time.sleep(1)
 
 
 class Instruction(object):

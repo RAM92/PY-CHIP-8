@@ -1,5 +1,6 @@
 import pytest
-from app import Register, CPU, OperationDefinition, Instruction, Memory
+from freezegun import freeze_time
+from .app import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister
 
 
 class TestInstruction(object):
@@ -325,3 +326,33 @@ class TestOpcodeDefinitionMapper:
     def test_only_responds_to_appropriate_input(self, definition, input, responds):
         x = OperationDefinition(definition, lambda: None)
         assert x.responds_to(input) is responds
+
+
+class TestTimerRegister:
+
+    @pytest.mark.parametrize(['initial_value', 'delta', 'expected'], (
+            #One per second
+            (10, 0, 10),
+            (10, 1, 9),
+            (10, 2, 8),
+            (10, 3, 7),
+            (10, 4, 6),
+            (10, 5, 5),
+            (10, 6, 4),
+            (10, 7, 3),
+            (10, 8, 2),
+            (10, 9, 1),
+            (10, 10, 0),
+            (10, 11, 0), #Never below 0
+            (10, 12, 0),
+            (10, 1000000, 0),
+            (0, 1000000, 0),
+    ))
+    def test_it_decrements_value_once_per_second(self, initial_value, delta, expected):
+        from datetime import datetime, timedelta
+        t = TimerRegister()
+
+        with freeze_time(datetime(2001, 1, 1, 0, 0, 0)):
+            t.value = initial_value
+        with freeze_time(datetime(2001, 1, 1, 0, 0, 0) + timedelta(seconds=delta)):
+            assert t.value == expected
