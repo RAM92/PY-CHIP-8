@@ -125,18 +125,15 @@ class CPU(object):
     #program starts at 0x200
     #big endian - MSB first!
 
-
-    @property
-    def vf(self):
-        return self.v[0xf]
-
     def __init__(self, data=[]):
         self.v=[]
         self.pc=0x200
         self.memory = Memory(data)
         self.stack = []
         for x in range(0, 16):
-            self.v.append(Register())
+            r = Register()
+            self.v.append(r)
+            self.__dict__['v' + format(x, 'x')] = r
 
         self.supported_operations = (
             OperationDefinition('6XNN', self.store_nn_in_vx),
