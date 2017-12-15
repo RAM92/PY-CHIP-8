@@ -20,11 +20,12 @@ class Register(object):
 
     value = property(get_value, set_value)
 
-    def _normalize_other(self, other):
+    @staticmethod
+    def _normalize_other(other):
         if isinstance(other, int):
             return other
         elif isinstance(other, Register):
-            return  other.value
+            return other.value
         else:
             raise TypeError
 
@@ -38,7 +39,7 @@ class Register(object):
         return self.value > self._normalize_other(other)
 
     def __lt__(self, other):
-        return self.value > self._normalize_other(other)
+        return self.value < self._normalize_other(other)
 
 
 class TimerRegister(Register):
@@ -194,9 +195,10 @@ class CPU(object):
         self.inc_pc()
 
     def add_vy_to_vx(self, inst):
-        vx_pre_op = self.v[inst.x]
-        self.v[inst.x].value += self.v[inst.y].value
-        self.bool_vf(self.v[inst.x] < vx_pre_op)
+        vx = self.v[inst.x]
+        vx_pre_op = vx.value
+        vx.value += self.v[inst.y].value
+        self.bool_vf(vx < vx_pre_op)
         self.inc_pc()
 
     def subtract_vy_from_vx(self, inst):

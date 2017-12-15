@@ -42,6 +42,18 @@ class TestRegister(object):
         r.value = 0xfff
         assert r.value == 0xff
 
+    def test_gt(self):
+        a = Register(1)
+        b = Register(2)
+        assert (b > a) is True
+        assert (a > b) is False
+
+    def test_lt(self):
+        a = Register(1)
+        b = Register(2)
+        assert (b < a) is False
+        assert (a < b) is True
+
 
 class TestMemory:
 
@@ -128,19 +140,30 @@ class TestOpCodes():
         cpu(0x7021)
         assert cpu.v[0] == 0x21 + 0x21
 
-    # 7XNN Add the value NN to register VX - wraps arond
+    # 7XNN Add the value NN to register VX - wraps around
     def test_adds_nn_to_vx_modulo(self, cpu):
         cpu.v[0].value = 0xff
         cpu(0x7001)
         assert cpu.v[0].value == 0x00
 
-    # 8XY4
+    # 8XY4 Add VY to VX - no carry
     def test_adds_vy_to_vx(self, cpu):
         cpu.v[0].value = 10
         cpu.v[1].value = 10
+        cpu.v[15].value = 123
         cpu(0x8104)
         assert cpu.v[0].value == 10
         assert cpu.v[1].value == 20
+        assert cpu.vf == 0
+
+    # 8XY4 Add VY to VX - wraps around
+    def test_adds_vy_to_vx_wraps(self, cpu):
+        cpu.v[0].value = 0xff
+        cpu.v[1].value = 10
+        cpu(0x8104)
+        assert cpu.v[0].value == 0xff
+        assert cpu.v[1].value == 9
+        assert cpu.vf == 1
 
     # 8XY5
     def test_subtract_vy_from_vx(self, cpu):
