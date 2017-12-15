@@ -167,59 +167,68 @@ class TestOpCodes():
 
     # 8XY5
     def test_subtract_vy_from_vx(self, cpu):
-        cpu.v[0].value = 10
-        cpu.v[1].value = 10
+        y = cpu.v0
+        x = cpu.v1
+        y.value = 10
+        x.value = 10
         cpu(0x8105)
-        assert cpu.v[0].value == 0
-        assert cpu.v[1].value == 10
+        assert y.value == 0
+        assert x.value == 10
+        assert cpu.vf == 0
 
     # 8XY5
     def test_subtract_vy_from_vx_borrow(self, cpu):
-        cpu.v[0].value = 10
-        cpu.v[1].value = 11
+        y = cpu.v0
+        x = cpu.v1
+        y.value = 10
+        x.value = 11
         cpu(0x8105)
-        assert cpu.v[0].value == 255
-        assert cpu.v[1].value == 11
-        assert cpu.vf.value == 1
+        assert y.value == 255
+        assert x.value == 11
+        assert cpu.vf == 1
 
     # 8XY7
     def test_subtract_vy_from_vx(self, cpu):
-        cpu.v[0].value = 10
-        cpu.v[1].value = 10
+        y = cpu.v0
+        x = cpu.v1
+        y.value = 10
+        x.value = 10
         cpu(0x8107)
-        assert cpu.v[0].value == 0
-        assert cpu.v[1].value == 10
+        assert y.value == 0
+        assert x.value == 10
         assert cpu.vf.value == 0
 
     # 8XY7
     def test_subtract_vy_from_vx_borrow(self, cpu):
-        cpu.v[0].value = 11
-        cpu.v[1].value = 10
+        y = cpu.v0
+        x = cpu.v1
+        y.value = 11
+        x.value = 10
         cpu(0x8107)
-        assert cpu.v[0].value == 255
-        assert cpu.v[1].value == 10
+        assert y.value == 255
+        assert x.value == 10
         assert cpu.vf.value == 1
 
     # 8XY1
     def test_vx_or_vy(self, cpu):
-        cpu.v[0].value = 0b10101010
-        cpu.v[1].value = 0b01010101
+        cpu.v0.value = 0b10101010
+        cpu.v1.value = 0b01010101
         cpu(0x8101)
-        assert cpu.v[1].value == 0b11111111
+        assert cpu.v1.value == 0b11111111
 
     # 8XY2
     def test_vx_and_vy(self, cpu):
-        cpu.v[0].value = 0b10101110
-        cpu.v[1].value = 0b01010101
+        cpu.v0.value = 0b10101110
+        cpu.v1.value = 0b01010101
         cpu(0x8102)
-        assert cpu.v[1].value == 0b00000100
+        assert cpu.v1.value == 0b00000100
 
     # 8XY3
     def test_vx_xor_vy(self, cpu):
-        cpu.v[0].value = 0b10101110
-        cpu.v[1].value = 0b01010101
+        cpu.v0.value = 0b10101110
+        cpu.v1.value = 0b01010101
         cpu(0x8103)
-        assert cpu.v[1].value == 0b11111011
+        assert cpu.v1.value == 0b11111011
 
     # 8XY6
     def test_shift_right(self, cpu):
