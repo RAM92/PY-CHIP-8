@@ -125,6 +125,8 @@ class TestOpCodes():
     def test_adds_nn_to_vx(self, cpu):
         cpu(0x7021)
         assert cpu.v[0] == 0x21
+        cpu(0x7021)
+        assert cpu.v[0] == 0x21 + 0x21
 
     # 7XNN Add the value NN to register VX - wraps arond
     def test_adds_nn_to_vx_modulo(self, cpu):
