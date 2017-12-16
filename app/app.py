@@ -44,7 +44,7 @@ class Register(object):
 
 class TimerRegister(Register):
 
-    target_time = 0
+    target_time = - float('inf')
 
     def __init__(self):
         super(TimerRegister, self).__init__()
@@ -61,7 +61,8 @@ class TimerRegister(Register):
             return int(self.target_time - now)
 
     def set_value(self, x):
-        self.target_time = self.get_now_ticks() + (x & 0xff)
+        x = self._normalize_other(x)
+        self.target_time = round(self.get_now_ticks()) + (x & 0xff)
 
     value = property(get_value, set_value)
 
@@ -131,6 +132,8 @@ class CPU(object):
         self.pc=0x200
         self.memory = Memory(data)
         self.stack = []
+        self.delay_timer = TimerRegister()
+        self.sound_timer = TimerRegister()
         for x in range(0, 16):
             r = Register()
             self.v.append(r)
@@ -163,6 +166,9 @@ class CPU(object):
             OperationDefinition('5XY0', self.skip_vx_eq_vy),
             OperationDefinition('4XNN', self.skip_vx_neq_nn),
             OperationDefinition('9XY0', self.skip_vx_neq_vy),
+
+            OperationDefinition('FX15', self.set_delay_timer),
+            OperationDefinition('FX07', self.delay_timer_to_vx),
 
             OperationDefinition('0NNN', self.unsupported_operation),
         )
@@ -274,6 +280,12 @@ class CPU(object):
 
     def skip_vx_neq_vy(self, inst):
         self._double_inc_pc_when(self.v[inst.x] != self.v[inst.y])
+
+    def set_delay_timer(self, inst: Instruction):
+        self.delay_timer.value = self.v[inst.x]
+
+    def delay_timer_to_vx(self, inst: Instruction):
+        self.v[inst.x].value = self.delay_timer.value
 
     def fetch_instruction(self):
         return self.memory[self.pc]

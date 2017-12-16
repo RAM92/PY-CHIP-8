@@ -1,7 +1,9 @@
 import pytest
 from freezegun import freeze_time
 from .app import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister
+from datetime import datetime, timedelta
 
+NICE_DATE = datetime(2001, 1, 1, 0, 0, 0)
 
 class TestInstruction(object):
 
@@ -395,6 +397,20 @@ class TestOpCodes():
         cpu(0x9010)
         assert cpu.pc == 0x201
 
+    # FX15
+    def test_set_delay_timer_to_vx(self, cpu):
+        with freeze_time(NICE_DATE):
+            cpu.v0.value = 0x12
+            cpu(0xf015)
+            assert cpu.delay_timer.value == 0x12
+
+    # FX15
+    def test_read_delay_timer_to_vx(self, cpu):
+        with freeze_time(NICE_DATE):
+            cpu.delay_timer.value = 0x12
+            cpu(0xf007)
+            assert cpu.v0 == 0x12
+
 
 class TestOpcodeDefinitionMapper:
 
@@ -436,10 +452,8 @@ class TestTimerRegister:
             (0, 1000000, 0),
     ))
     def test_it_decrements_value_once_per_second(self, initial_value, delta, expected):
-        from datetime import datetime, timedelta
         t = TimerRegister()
-
-        with freeze_time(datetime(2001, 1, 1, 0, 0, 0)):
+        with freeze_time(NICE_DATE):
             t.value = initial_value
-        with freeze_time(datetime(2001, 1, 1, 0, 0, 0) + timedelta(seconds=delta)):
+        with freeze_time(NICE_DATE + timedelta(seconds=delta)):
             assert t.value == expected
