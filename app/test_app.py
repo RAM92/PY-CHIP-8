@@ -172,23 +172,23 @@ class TestOpCodes():
         y.value = 10
         x.value = 10
         cpu(0x8105)
-        assert y.value == 0
-        assert x.value == 10
+        assert y.value == 10
+        assert x.value == 0
         assert cpu.vf == 0
 
     # 8XY5
     def test_subtract_vy_from_vx_borrow(self, cpu):
         y = cpu.v0
         x = cpu.v1
-        y.value = 10
-        x.value = 11
+        y.value = 11
+        x.value = 10
         cpu(0x8105)
-        assert y.value == 255
-        assert x.value == 11
+        assert y.value == 11
+        assert x.value == 255
         assert cpu.vf == 1
 
     # 8XY7
-    def test_subtract_vy_from_vx(self, cpu):
+    def test_subtract_vx_from_vy(self, cpu):
         y = cpu.v0
         x = cpu.v1
         y.value = 10
@@ -199,7 +199,7 @@ class TestOpCodes():
         assert cpu.vf.value == 0
 
     # 8XY7
-    def test_subtract_vy_from_vx_borrow(self, cpu):
+    def test_subtract_vx_from_vy_borrow(self, cpu):
         y = cpu.v0
         x = cpu.v1
         y.value = 11
