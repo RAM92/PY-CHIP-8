@@ -226,8 +226,11 @@ class CPU(object):
         self.inc_pc()
 
     def shift_vy_right_store_in_vx(self, inst):
-        self.vf.value = self.v[inst.y].value & 1
-        self.v[inst.x].value = self.v[inst.y].value >> 1
+        vy_value = self.v[inst.y].value
+        self.vf.value = vy_value & 1
+        new_vx = vy_value >> 1
+        print(vy_value)
+        self.v[inst.x].value = new_vx
         self.inc_pc()
 
     def shift_vy_left_store_in_vx(self, inst):

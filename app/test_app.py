@@ -231,15 +231,28 @@ class TestOpCodes():
         assert cpu.v1.value == 0b11111011
 
     # 8XY6
-    def test_shift_right(self, cpu):
-        cpu.v[0].value = 0b01110001
+    def test_shift_right_sets_vf_to_lsb(self, cpu):
+        y = cpu.v0
+
+        y.value = 0b11100101
         cpu(0x8106)
-        assert cpu.v[1].value == 0b00111000
-        assert cpu.vf.value == 1
-        cpu.v[0].value = 0b00111000
+        assert cpu.vf == 1
+
+        y.value = 0b11100100
         cpu(0x8106)
-        assert cpu.v[1].value == 0b00011100
-        assert cpu.vf.value == 0
+        assert cpu.vf == 0
+
+    # 8XY6
+    def test_shift_right_stores_shifted_value_in_vx(self, cpu):
+        y = cpu.v0
+        x = cpu.v1
+
+        y_value = 0b11100101
+        y.value = y_value
+        print(y.value)
+        cpu(0x8106)
+        assert x == 0b01110010
+        assert y == y_value
 
     # 8XYE
     def test_shift_left(self, cpu):
