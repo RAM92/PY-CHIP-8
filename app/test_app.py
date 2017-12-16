@@ -249,10 +249,19 @@ class TestOpCodes():
 
         y_value = 0b11100101
         y.value = y_value
-        print(y.value)
         cpu(0x8106)
         assert x == 0b01110010
         assert y == y_value
+
+    # 8XY6
+    def test_shift_right_same_register(self, cpu):
+        x = cpu.v0
+        x.value = 0b11100011
+
+        cpu(0x8006)
+        assert x == 0b01110001
+        cpu(0x8006)
+        assert x == 0b00111000
 
     # 8XYE
     def test_shift_left_sets_vf_to_msb(self, cpu):
@@ -281,6 +290,15 @@ class TestOpCodes():
         cpu(0x810E)
         assert x == 0b00111000
         assert y == y_value
+
+    # 8XYE
+    def test_shift_left_same_register(self, cpu):
+        x = cpu.v0
+        x.value = 0b11100011
+        cpu(0x800E)
+        assert x == 0b11000110
+        cpu(0x800E)
+        assert x == 0b10001100
 
     # CXNN
     def test_random_number_masked(self, cpu, monkeypatch):
