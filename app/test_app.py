@@ -255,15 +255,32 @@ class TestOpCodes():
         assert y == y_value
 
     # 8XYE
+    def test_shift_left_sets_vf_to_msb(self, cpu):
+        y = cpu.v0
+
+        y.value = 0b11100101
+        cpu(0x810E)
+        assert cpu.vf == 1
+
+        y.value = 0b01100100
+        cpu(0x810E)
+        assert cpu.vf == 0
+
+    # 8XYE
     def test_shift_left(self, cpu):
-        cpu.v[0].value = 0b10001110
+        y = cpu.v0
+        x = cpu.v1
+        y_value = 0b10001110
+        y.value = y_value
         cpu(0x810E)
-        assert cpu.v[1].value == 0b00011100
-        assert cpu.vf.value == 1
-        cpu.v[0].value = 0b00011100
+        assert x == 0b00011100
+        assert y == y_value
+
+        y_value = 0b00011100
+        y.value = y_value
         cpu(0x810E)
-        assert cpu.v[1].value == 0b00111000
-        assert cpu.vf.value == 0
+        assert x == 0b00111000
+        assert y == y_value
 
     # CXNN
     def test_random_number_masked(self, cpu, monkeypatch):
