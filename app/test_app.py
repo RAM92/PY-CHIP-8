@@ -314,7 +314,7 @@ class TestOpCodes():
 
     # BNNN
     def test_jump_nnn_plus_v0(self, cpu):
-        cpu.v[0].value = 0x23
+        cpu.v0.value = 0x23
         cpu(0xB100)
         assert cpu.pc == 0x123
 
@@ -337,6 +337,11 @@ class TestOpCodes():
         cpu(0x00EE)
         assert cpu.pc == 0x200
         assert cpu.stack == []
+
+    #0NNN
+    def test_exec_asm_not_implemented(self, cpu):
+        with pytest.raises(NotImplementedError):
+            cpu(0x0123)
 
     #3XNN
     def test_skip_vx_eq_nn__equal(self, cpu):
