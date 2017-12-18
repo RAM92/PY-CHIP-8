@@ -283,9 +283,11 @@ class CPU(object):
 
     def set_delay_timer(self, inst: Instruction):
         self.delay_timer.value = self.v[inst.x]
+        self.inc_pc()
 
     def delay_timer_to_vx(self, inst: Instruction):
         self.v[inst.x].value = self.delay_timer.value
+        self.inc_pc()
 
     def fetch_instruction(self):
         return self.memory[self.pc]
