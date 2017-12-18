@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from .app import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister
+from .cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister
 from datetime import datetime, timedelta
 
 NICE_DATE = datetime(2001, 1, 1, 0, 0, 0)
