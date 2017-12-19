@@ -118,7 +118,7 @@ class OperationDefinition:
 class Memory(list):
 
     def __init__(self, data=[]):
-        interpreter = [random.randint(0, 255) for x in range(0x200)]
+        interpreter = [0x1200 for x in range(0x200)]
         super(Memory, self).__init__(interpreter)
         self.extend(data)
 
