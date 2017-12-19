@@ -6,6 +6,121 @@ SCREEN_HEIGHT = 32
 FULL_BLOCK_CHAR = u"\u2588"
 EMPTY_BLOCK_CHAR = ' '
 
+FONT = [
+    [  # 0
+        0xF0,
+        0x90,
+        0x90,
+        0x90,
+        0xF0
+    ],
+    [  # 1
+        0x20,
+        0x60,
+        0x20,
+        0x20,
+        0x70,
+    ],
+    [  # 2
+        0xF0,
+        0x10,
+        0xF0,
+        0x80,
+        0xF0,
+    ],
+    [  # 3
+        0xF0,
+        0x10,
+        0xF0,
+        0x10,
+        0xF0,
+    ],
+    [  # 4
+        0x90,
+        0x90,
+        0xF0,
+        0x10,
+        0x10,
+    ],
+    [  # 5
+        0xF0,
+        0x80,
+        0xF0,
+        0x10,
+        0xF0,
+    ],
+    [  # 6
+        0xF0,
+        0x80,
+        0xF0,
+        0x90,
+        0xF0,
+    ],
+    [  # 7
+        0xF0,
+        0x10,
+        0x20,
+        0x40,
+        0x40,
+    ],
+    [  # 8
+        0xF0,
+        0x90,
+        0xF0,
+        0x90,
+        0xF0,
+    ],
+    [  # 9
+        0xF0,
+        0x90,
+        0xF0,
+        0x10,
+        0xF0,
+    ],
+    [  # A
+        0xF0,
+        0x90,
+        0xF0,
+        0x90,
+        0x90,
+    ],
+    [  # B
+        0xE0,
+        0x90,
+        0xE0,
+        0x90,
+        0xE0,
+    ],
+    [  # C
+        0xF0,
+        0x80,
+        0x80,
+        0x80,
+        0xF0,
+    ],
+    [  # D
+        0xE0,
+        0x90,
+        0x90,
+        0x90,
+        0xE0,
+    ],
+    [  # E
+        0xF0,
+        0x80,
+        0xF0,
+        0x80,
+        0xF0,
+    ],
+    [  # F
+        0xF0,
+        0x80,
+        0xF0,
+        0x80,
+        0x80,
+    ],
+]
+
 
 class Screen:
 
@@ -19,10 +134,11 @@ class Screen:
             raise RuntimeError('Terminal width or height insufficient!')
 
         stdscr.clear()
+        curses.curs_set(0)
         self.stdscr = stdscr
         self.add_pixels()
 
-        self.write_sprite(0, 0, [0x20, 0x60, 0x20, 0x20, 0x70])
+        self.write_sprite(60, 0, FONT[0xa])
 
         while True:
             pass
@@ -48,11 +164,8 @@ class Screen:
         self.refresh()
 
     def write_pixel(self, x: int, y: int, on=False) -> bool:
-        if x < 0:
-            x += SCREEN_WIDTH
-
-        if y < 0:
-            y += SCREEN_HEIGHT
+        x %= SCREEN_WIDTH
+        y %= SCREEN_HEIGHT
 
         previous_pixel_value = self.pixels[x][y]
         self.pixels[x][y] = on != self.pixels[x][y]
