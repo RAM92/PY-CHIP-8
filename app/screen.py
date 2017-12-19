@@ -138,7 +138,8 @@ class Screen:
         self.stdscr = stdscr
         self.add_pixels()
 
-        self.write_sprite(60, 0, FONT[0xa])
+        self.write_sprite(0, 0, FONT[0xa])
+        self.write_sprite(0, 0, FONT[0xF])
 
         while True:
             pass
@@ -168,8 +169,8 @@ class Screen:
         y %= SCREEN_HEIGHT
 
         previous_pixel_value = self.pixels[x][y]
-        self.pixels[x][y] = on != self.pixels[x][y]
-
+        on = on != self.pixels[x][y]
+        self.pixels[x][y] = on
         self.stdscr.addstr(y, x, FULL_BLOCK_CHAR if on else EMPTY_BLOCK_CHAR)
 
         return previous_pixel_value == self.pixels[x][y]
