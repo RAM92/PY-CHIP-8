@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import argparse
-from screen import Screen
+from screen import screen
 
 
 def main():
@@ -8,6 +8,6 @@ def main():
     parser.add_argument('-d', '--debug', help='show debug info while running', action='store_true')
 
     args = parser.parse_args()
-    screen = Screen()
+    s = screen()
 
 main()
