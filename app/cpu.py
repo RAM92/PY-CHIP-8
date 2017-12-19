@@ -49,20 +49,16 @@ class TimerRegister(Register):
     def __init__(self):
         super(TimerRegister, self).__init__()
 
-    @staticmethod
-    def get_now_ticks():
-        return datetime.datetime.now().timestamp()
-
     def get_value(self):
-        now = self.get_now_ticks()
+        now = datetime.datetime.now()
         if now > self.target_time:
             return 0
         else:
-            return int(self.target_time - now)
+            return round((self.target_time - now).total_seconds())
 
     def set_value(self, x):
         x = self._normalize_other(x)
-        self.target_time = round(self.get_now_ticks()) + (x & 0xff)
+        self.target_time = datetime.datetime.now() + datetime.timedelta(seconds=x)
 
     value = property(get_value, set_value)
 
