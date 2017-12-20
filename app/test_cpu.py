@@ -72,6 +72,12 @@ class TestMemory:
         assert len(m) == 0x204
         assert m[0x203] == 4
 
+    def test_it_returns_address_for_sprite(self):
+        m = Memory()
+        assert m.sprite_for_int(0x0) == 0
+        assert m.sprite_for_int(0xa) == 0xa * 5
+        assert m.sprite_for_int(0xf) == 0xf * 5
+
 
 @pytest.fixture
 def cpu():

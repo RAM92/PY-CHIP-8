@@ -3,6 +3,7 @@
 
 
 import random, datetime
+from .screen import FONT
 
 import math
 
@@ -114,9 +115,15 @@ class OperationDefinition:
 class Memory(list):
 
     def __init__(self, data=[]):
-        interpreter = [0x1200 for x in range(0x200)]
-        super(Memory, self).__init__(interpreter)
+        l = FONT[:]
+        while len(l) != 0x200:
+            l.append(0x1200)
+        super(Memory, self).__init__(l)
         self.extend(data)
+
+    @staticmethod
+    def sprite_for_int(i: int) -> int:
+        return i * 5
 
 
 class CPU(object):
