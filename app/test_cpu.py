@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from .cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister
+from .cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister, IRegister
 from datetime import datetime, timedelta
 
 NICE_DATE = datetime(2001, 1, 1, 0, 0, 0)
@@ -94,6 +94,9 @@ class TestCPU:
 
     def test_has_memory(self, cpu):
         assert isinstance(cpu.memory, Memory)
+
+    def test_has_i_register(self, cpu):
+        assert isinstance(cpu.i, IRegister)
 
     def test_increments_pc_after_executing_inst(self, cpu):
         cpu()

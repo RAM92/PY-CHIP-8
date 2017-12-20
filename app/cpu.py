@@ -17,7 +17,7 @@ class Register(object):
         return self._value
 
     def set_value(self, x):
-        self._value = 0xff & x
+        self._value = 0xff & self._normalize_other(x)
 
     value = property(get_value, set_value)
 
@@ -41,6 +41,12 @@ class Register(object):
 
     def __lt__(self, other):
         return self.value < self._normalize_other(other)
+
+
+class IRegister(Register):
+
+    def set_value(self, x):
+        self._value = 0xfff & self._normalize_other(x)
 
 
 class TimerRegister(Register):
@@ -134,6 +140,7 @@ class CPU(object):
         self.v=[]
         self.pc=0x200
         self.memory = Memory(data)
+        self.i = IRegister()
         self.stack = []
         self.delay_timer = TimerRegister()
         self.sound_timer = TimerRegister()
