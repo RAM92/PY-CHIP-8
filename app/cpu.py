@@ -180,6 +180,9 @@ class CPU(object):
             OperationDefinition('FX15', self.set_delay_timer),
             OperationDefinition('FX07', self.delay_timer_to_vx),
 
+            OperationDefinition('ANNN', self.store_nnn_in_i),
+            OperationDefinition('FX1E', self.add_vx_to_i),
+
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
@@ -297,6 +300,14 @@ class CPU(object):
 
     def delay_timer_to_vx(self, inst: Instruction):
         self.v[inst.x].value = self.delay_timer.value
+        self.inc_pc()
+
+    def store_nnn_in_i(self, inst: Instruction):
+        self.i.value = inst.nnn
+        self.inc_pc()
+
+    def add_vx_to_i(self, inst: Instruction):
+        self.i.value += self.v[inst.x]
         self.inc_pc()
 
     def fetch_instruction(self):
