@@ -75,15 +75,12 @@ class Instruction(object):
 
     def __init__(self, data=0):
         self.data = data
-        self.f  = (data & 0xf000) >> 12 #f for "First nibble"
-        self.x  = (data & 0x0f00) >> 8
-        self.y  = (data & 0x00f0) >> 4
-        self.e  =  data & 0x000f
-        self.nnn=  data & 0x0fff
-
-    @property
-    def nn(self):
-        return self.data & 0xff
+        self.f   = (data & 0xf000) >> 12 #f for "First nibble"
+        self.x   = (data & 0x0f00) >> 8
+        self.y   = (data & 0x00f0) >> 4
+        self.e   =  data & 0x000f
+        self.nnn =  data & 0x0fff
+        self.nn  =  data & 0x00ff
 
 
 class OperationDefinition:
