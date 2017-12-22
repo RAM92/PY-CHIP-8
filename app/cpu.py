@@ -185,6 +185,8 @@ class CPU(object):
 
             OperationDefinition('FX33', self.convert_vx_to_bcd),
 
+            OperationDefinition('FX55', self.v0_to_vx_to_memory),
+
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
@@ -328,6 +330,16 @@ class CPU(object):
         self.memory[self.i.value + 1] = x[1]
         self.memory[self.i.value + 2] = x[2]
         self.inc_pc()
+
+    def v0_to_vx_to_memory(self, inst: Instruction):
+        for i, v in enumerate(self.v):
+            self.memory[self.i.value + i] = v.value
+            if i == inst.x:
+                break
+        self.i.value += inst.x + 1
+        self.inc_pc()
+
+    ###################################################################
 
     def fetch_instruction(self):
         return ((self.memory[self.pc]) << 8) | (self.memory[self.pc + 1])

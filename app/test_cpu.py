@@ -444,6 +444,17 @@ class TestOpCodes():
         cpu(0xF033)
         assert cpu.memory[0x200:0x203] == [0, 0, 9]
 
+    # FX55
+    def test_v0_to_vx_to_memory(self, cpu):
+        for i in range(16):
+            cpu.v[i].value = i
+
+        cpu.i.value = 0x200
+
+        cpu(0xF455)
+
+        assert cpu.memory[0x200:0x20F] == [0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        assert cpu.i.value == 0x206
 
 
 class TestOpcodeDefinitionMapper:
