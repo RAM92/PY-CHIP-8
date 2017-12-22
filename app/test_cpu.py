@@ -448,7 +448,7 @@ class TestOpCodes():
 
 class TestOpcodeDefinitionMapper:
 
-    @pytest.mark.parametrize(['definition', 'input', 'responds'], (
+    @pytest.mark.parametrize(['definition', 'x', 'responds'], (
             ('1xx4', 0x1234, True),
             ('1xx4', 0x1324, True),
             ('1xx4', 0x1004, True),
@@ -460,9 +460,9 @@ class TestOpcodeDefinitionMapper:
             ('Foo0', 0xF000, True),
             ('Foo0', 0xF00B, False),
     ))
-    def test_only_responds_to_appropriate_input(self, definition, input, responds):
+    def test_only_responds_to_appropriate_input(self, definition, x, responds):
         x = OperationDefinition(definition, lambda: None)
-        assert x.responds_to(input) is responds
+        assert x.responds_to(x) is responds
 
 
 class TestTimerRegister:
