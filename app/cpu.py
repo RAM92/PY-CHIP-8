@@ -323,7 +323,7 @@ class CPU(object):
         self.inc_pc()
 
     def convert_vx_to_bcd(self, inst: Instruction):
-        x = self.bcd(self.v[inst.x])
+        x = self.bcd(self.v[inst.x].value)
         self.memory[self.i.value + 0] = x[0]
         self.memory[self.i.value + 1] = x[1]
         self.memory[self.i.value + 2] = x[2]

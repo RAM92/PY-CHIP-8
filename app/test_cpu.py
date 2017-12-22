@@ -434,6 +434,17 @@ class TestOpCodes():
         cpu(0xF31E)
         assert cpu.i.value == 0x125
 
+    # FX33
+    def test_convert_vx_to_bcd(self, cpu):
+        cpu.v0.value = 123
+        cpu.i.value = 0x200
+        cpu(0xF033)
+        assert cpu.memory[0x200:0x203] == [1, 2, 3]
+        cpu.v0.value = 9
+        cpu(0xF033)
+        assert cpu.memory[0x200:0x203] == [0, 0, 9]
+
+
 
 class TestOpcodeDefinitionMapper:
 
