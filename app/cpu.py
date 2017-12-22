@@ -120,12 +120,14 @@ class OperationDefinition:
 
 class Memory(list):
 
-    def __init__(self, data=[]):
+    def __init__(self):
         l = FONT[:]
         while len(l) != 0x200:
-            l.append(0x1200)
+            l.append(0x12)
+            l.append(0x00)
+        while len(l) != 4096:
+            l.append(0x00)
         super(Memory, self).__init__(l)
-        self.extend(data)
 
     @staticmethod
     def sprite_for_int(i: int) -> int:
@@ -139,7 +141,7 @@ class CPU(object):
     def __init__(self, data=[]):
         self.v=[]
         self.pc=0x200
-        self.memory = Memory(data)
+        self.memory = Memory()
         self.i = IRegister()
         self.stack = []
         self.delay_timer = TimerRegister()
@@ -197,7 +199,7 @@ class CPU(object):
         return c, b, a
 
     def inc_pc(self):
-        self.pc += 1
+        self.pc += 2
 
     def push_stack(self):
         self.stack.append(self.pc)
@@ -321,7 +323,7 @@ class CPU(object):
         self.inc_pc()
 
     def fetch_instruction(self):
-        return self.memory[self.pc]
+        return ((self.memory[self.pc]) << 8) | (self.memory[self.pc +1])
 
     @staticmethod
     def decode_instruction(data):

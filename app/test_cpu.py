@@ -67,11 +67,6 @@ class TestMemory:
         m = Memory()
         len(m) == 0x200
 
-    def test_it_appends_anything_supplied_to_it(self):
-        m = Memory([1, 2, 3, 4])
-        assert len(m) == 0x204
-        assert m[0x203] == 4
-
     def test_it_returns_address_for_sprite(self):
         m = Memory()
         assert m.sprite_for_int(0x0) == 0
@@ -99,12 +94,19 @@ class TestCPU:
         assert isinstance(cpu.i, IRegister)
 
     def test_increments_pc_after_executing_inst(self, cpu):
-        cpu()
-        assert cpu.pc == 0x201
+        cpu.memory[0x200 + 0] = 0x60
+        cpu.memory[0x201 + 0] = 0x00 # 6XNN
+        cpu.memory[0x202 + 0] = 0x60
+        cpu.memory[0x203 + 0] = 0x00 # 6XNN
+        cpu.memory[0x204 + 0] = 0x60
+        cpu.memory[0x205 + 0] = 0x00 # 6XNN
+
         cpu()
         assert cpu.pc == 0x202
         cpu()
-        assert cpu.pc == 0x203
+        assert cpu.pc == 0x204
+        cpu()
+        assert cpu.pc == 0x206
 
     def test_stack_stores_pc(self, cpu):
         cpu.pc = 100
@@ -358,53 +360,53 @@ class TestOpCodes():
     def test_skip_vx_eq_nn__equal(self, cpu):
         cpu.v0.value = 0x33
         cpu(0x3033)
-        assert cpu.pc == 0x202
+        assert cpu.pc == 0x204
 
     #3XNN
     def test_skip_vx_eq_nn__not_equal(self, cpu):
         cpu.v0.value = 0xff
         cpu(0x3033)
-        assert cpu.pc == 0x201
+        assert cpu.pc == 0x202
 
     #5XY0
     def test_skip_vx_eq_vy__equal(self, cpu):
         cpu.v0.value = 0x33
         cpu.v1.value = 0x33
         cpu(0x5010)
-        assert cpu.pc == 0x202
+        assert cpu.pc == 0x204
 
     #5XY0
     def test_skip_vx_eq_vy__not_equal(self, cpu):
         cpu.v0.value = 0x33
         cpu.v1.value = 0x66
         cpu(0x5010)
-        assert cpu.pc == 0x201
+        assert cpu.pc == 0x202
 
     #4XNN
     def test_skip_vx_neq_nn__not_equal(self, cpu):
         cpu.v0.value = 0xff
         cpu(0x4033)
-        assert cpu.pc == 0x202
+        assert cpu.pc == 0x204
 
     #4XNN
     def test_skip_vx_neq_nn__equal(self, cpu):
         cpu.v0.value = 0x33
         cpu(0x4033)
-        assert cpu.pc == 0x201
+        assert cpu.pc == 0x202
 
     #9XY0
     def test_skip_vx_neq_vy__not_equal(self, cpu):
         cpu.v0.value = 0x33
         cpu.v1.value = 0x66
         cpu(0x9010)
-        assert cpu.pc == 0x202
+        assert cpu.pc == 0x204
 
     #9XY0
     def test_skip_vx_neq_vy__equal(self, cpu):
         cpu.v0.value = 0x33
         cpu.v1.value = 0x33
         cpu(0x9010)
-        assert cpu.pc == 0x201
+        assert cpu.pc == 0x202
 
     # FX15
     def test_set_delay_timer_to_vx(self, cpu):
