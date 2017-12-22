@@ -423,12 +423,12 @@ class TestOpCodes():
             assert cpu.v0 == 0x12
 
     # ANNN
-    def store_nnn_in_i(self, cpu):
+    def test_store_nnn_in_i(self, cpu):
         cpu(0xA123)
         assert cpu.i.value == 0x123
 
     # FX1E
-    def add_vx_to_i(self, cpu):
+    def test_add_vx_to_i(self, cpu):
         cpu.i.value = 0x123
         cpu.v3.value = 2
         cpu(0xF31E)

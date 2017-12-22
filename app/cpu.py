@@ -13,13 +13,13 @@ class Register(object):
     def __init__(self, value=0):
         self.value=value
 
-    def get_value(self):
+    @property
+    def value(self):
         return self._value
 
-    def set_value(self, x):
+    @value.setter
+    def value(self, x):
         self._value = 0xff & self._normalize_other(x)
-
-    value = property(get_value, set_value)
 
     @staticmethod
     def _normalize_other(other):
@@ -45,7 +45,8 @@ class Register(object):
 
 class IRegister(Register):
 
-    def set_value(self, x):
+    @Register.value.setter
+    def value(self, x):
         self._value = 0xfff & self._normalize_other(x)
 
 
@@ -182,6 +183,8 @@ class CPU(object):
             OperationDefinition('ANNN', self.store_nnn_in_i),
             OperationDefinition('FX1E', self.add_vx_to_i),
 
+            OperationDefinition('FX33', self.convert_vx_to_bcd),
+
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
@@ -316,11 +319,18 @@ class CPU(object):
         self.inc_pc()
 
     def add_vx_to_i(self, inst: Instruction):
-        self.i.value += self.v[inst.x]
+        self.i.value += self.v[inst.x].value
+        self.inc_pc()
+
+    def convert_vx_to_bcd(self, inst: Instruction):
+        x = self.bcd(self.v[inst.x])
+        self.memory[self.i.value + 0] = x[0]
+        self.memory[self.i.value + 1] = x[1]
+        self.memory[self.i.value + 2] = x[2]
         self.inc_pc()
 
     def fetch_instruction(self):
-        return ((self.memory[self.pc]) << 8) | (self.memory[self.pc +1])
+        return ((self.memory[self.pc]) << 8) | (self.memory[self.pc + 1])
 
     @staticmethod
     def decode_instruction(data):
