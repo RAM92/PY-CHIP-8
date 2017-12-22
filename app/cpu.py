@@ -186,6 +186,16 @@ class CPU(object):
             OperationDefinition('0NNN', self.unsupported_operation),
         )
 
+    @staticmethod
+    def bcd(x: int) -> tuple:
+        x &= 0xff
+        a = x % 10
+        x -= a
+        b = math.floor(x % 100 / 10)
+        x -= b * 10
+        c = math.floor(x / 100)
+        return c, b, a
+
     def inc_pc(self):
         self.pc += 1
 
