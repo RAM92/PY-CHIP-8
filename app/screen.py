@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 SCREEN_WIDTH = 64
 SCREEN_HEIGHT = 32
 
@@ -112,6 +116,7 @@ class VirtualScreen:
         self.pixels = [([False] * SCREEN_HEIGHT) for i in range(SCREEN_WIDTH)]
 
     def write_sprite(self, x, y, sprite_data: list):
+        logger.debug('writing sprite at x:%s y:%s with data %s', x, y, sprite_data)
         sprite_length = len(sprite_data)
         if sprite_length > 15:
             sprite_length = 15

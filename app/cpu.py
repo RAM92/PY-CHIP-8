@@ -4,8 +4,10 @@
 
 import random, datetime
 from screen import FONT, VirtualScreen
-
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Register(object):
@@ -110,6 +112,7 @@ class OperationDefinition:
 
     def __call__(self, inst: Instruction):
         if self.responds_to(inst.data):
+            logger.debug('Executing instruction for %s, with data %#x', self.str, inst.data)
             self.cb(inst)
             return True
         else:
@@ -377,6 +380,7 @@ class CPU(object):
     ###################################################################
 
     def fetch_instruction(self):
+        logger.debug('Fetched instruction from %#x', self.pc)
         return ((self.memory[self.pc]) << 8) | (self.memory[self.pc + 1])
 
     @staticmethod
