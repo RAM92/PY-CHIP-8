@@ -3,7 +3,7 @@
 
 
 import random, datetime
-from .screen import FONT
+from .screen import FONT, VirtualScreen
 
 import math
 
@@ -79,7 +79,7 @@ class Instruction(object):
         self.f   = (data & 0xf000) >> 12 #f for "First nibble"
         self.x   = (data & 0x0f00) >> 8
         self.y   = (data & 0x00f0) >> 4
-        self.e   =  data & 0x000f
+        self.n   =  data & 0x000f
         self.nnn =  data & 0x0fff
         self.nn  =  data & 0x00ff
 
@@ -136,7 +136,7 @@ class CPU(object):
     #program starts at 0x200
     #big endian - MSB first!
 
-    def __init__(self, data=[]):
+    def __init__(self, screen: VirtualScreen):
         self.v=[]
         self.pc=0x200
         self.memory = Memory()
@@ -144,6 +144,8 @@ class CPU(object):
         self.stack = []
         self.delay_timer = TimerRegister()
         self.sound_timer = TimerRegister()
+        self.screen = screen
+
         for x in range(0, 16):
             r = Register()
             self.v.append(r)
@@ -187,6 +189,8 @@ class CPU(object):
 
             OperationDefinition('FX55', self.v0_to_vx_to_memory),
             OperationDefinition('FX65', self.memory_to_v0_to_vx),
+
+            OperationDefinition('DXYN', self.draw_sprite),
 
             OperationDefinition('0NNN', self.unsupported_operation),
         )
@@ -346,6 +350,12 @@ class CPU(object):
             if i == inst.x:
                 break
         self.i.value += inst.x + 1
+        self.inc_pc()
+
+    def draw_sprite(self, inst: Instruction):
+        sprite_data = self.memory[self.i.value:self.i.value + inst.n]
+        new_vf = self.screen.write_sprite(inst.x, inst.y, sprite_data)
+        self.bool_vf(new_vf)
         self.inc_pc()
 
     ###################################################################

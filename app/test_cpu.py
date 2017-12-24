@@ -2,14 +2,16 @@ import pytest
 from freezegun import freeze_time
 from .cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister, IRegister
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock
 
 NICE_DATE = datetime(2001, 1, 1, 0, 0, 0)
 
+
 class TestInstruction(object):
 
-    def test_stores_nibble_0_on_e(self):
+    def test_stores_nibble_0_on_n(self):
         i = Instruction(0x1234)
-        assert i.e == 0x4
+        assert i.n == 0x4
 
     def test_stores_nibble_1_on_y(self):
         i = Instruction(0x1234)
@@ -76,7 +78,8 @@ class TestMemory:
 
 @pytest.fixture
 def cpu():
-    return CPU([0x6000 for x in range(0xfff)])
+    mock_screen = MagicMock()
+    return CPU(mock_screen)
 
 
 class TestCPU:
@@ -466,6 +469,26 @@ class TestOpCodes():
 
         assert list(map(lambda x: x.value, cpu.v)) == [0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         assert cpu.i.value == 0x200 + 4 + 1
+
+    # DXYN
+    def test_draw_sprite(self, cpu):
+        cpu.i.value = 0x200
+        cpu.memory[0x200] = 1
+        cpu.memory[0x201] = 2
+        cpu.memory[0x202] = 3
+        cpu.memory[0x203] = 4
+        cpu(0xD984)
+        cpu.screen.write_sprite.assert_called_once_with(9, 8, [1, 2, 3, 4])
+
+    # DXYN
+    def test_draw_sprite_sets_vf_if_write_sprite_returns_true(self, cpu):
+        cpu.i.value = 0x200
+        cpu.screen.write_sprite.return_value = True
+        cpu(0xD984)
+        assert cpu.vf.value == 1
+        cpu.screen.write_sprite.return_value = False
+        cpu(0xD984)
+        assert cpu.vf.value == 0
 
 
 class TestOpcodeDefinitionMapper:
