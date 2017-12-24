@@ -108,9 +108,9 @@ class OperationDefinition:
     def responds_to(self, x):
         return x & self.mask == self.match_number
 
-    def __call__(self, x):
-        if self.responds_to(x):
-            self.cb(Instruction(x))
+    def __call__(self, inst: Instruction):
+        if self.responds_to(inst.data):
+            self.cb(inst)
             return True
         else:
             return False
@@ -383,9 +383,9 @@ class CPU(object):
     def decode_instruction(data):
         return Instruction(data)
 
-    def execute_instruction(self, inst):
+    def execute_instruction(self, inst: Instruction):
         for handler in self.supported_operations:
-            success = handler(inst.data)
+            success = handler(inst)
             if success:
                 break
 

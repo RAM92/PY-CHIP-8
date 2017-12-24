@@ -21,6 +21,6 @@ def main(stdscr):
 
     while True:
         cpu()
-        time.sleep(0.1)
+        # time.sleep(0.1)
 
 wrapper(main)

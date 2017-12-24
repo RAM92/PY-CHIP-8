@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from .cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister, IRegister
+from cpu import Register, CPU, OperationDefinition, Instruction, Memory, TimerRegister, IRegister
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 
