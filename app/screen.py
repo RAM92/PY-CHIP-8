@@ -1,5 +1,3 @@
-from curses import wrapper
-
 SCREEN_WIDTH = 64
 SCREEN_HEIGHT = 32
 
@@ -146,11 +144,8 @@ screen_instance = None
 
 class _Screen(VirtualScreen):
 
-    def __init__(self):
+    def __init__(self, stdscr):
         super(_Screen, self).__init__()
-        wrapper(self.main)
-
-    def main(self, stdscr):
         import curses
         if curses.LINES < SCREEN_HEIGHT or curses.COLS < SCREEN_WIDTH:
             raise RuntimeError('Terminal width or height insufficient!')
@@ -158,10 +153,6 @@ class _Screen(VirtualScreen):
         stdscr.clear()
         curses.curs_set(0)
         self.stdscr = stdscr
-
-        self.write_sprite(0, 0, FONT[0xa * 5:0xa * 5 + 5])
-        while True:
-            pass
 
     def write_sprite(self, x, y, sprite_data: list) -> bool:
         x = super(_Screen, self).write_sprite(x, y, sprite_data)
@@ -181,8 +172,9 @@ class _Screen(VirtualScreen):
         super().clear()
 
 
-def screen():
+def screen(stdscr):
+    global screen_instance
     if screen_instance:
         return screen_instance
-    screen_instance = _Screen()
+    screen_instance = _Screen(stdscr)
     return screen_instance

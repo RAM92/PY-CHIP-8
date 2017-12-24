@@ -3,7 +3,7 @@
 
 
 import random, datetime
-from .screen import FONT, VirtualScreen
+from screen import FONT, VirtualScreen
 
 import math
 
@@ -131,6 +131,10 @@ class Memory(list):
     def sprite_for_int(i: int) -> int:
         return i * 5
 
+    def load_data(self, data):
+        for i, x in enumerate(data):
+            self[0x200 + i] = x
+
 
 class CPU(object):
     #program starts at 0x200
@@ -196,6 +200,9 @@ class CPU(object):
 
             OperationDefinition('0NNN', self.unsupported_operation),
         )
+
+    def load_program(self, program):
+        self.memory.load_data(program)
 
     @staticmethod
     def bcd(x: int) -> tuple:
@@ -269,7 +276,6 @@ class CPU(object):
         vy_value = self.v[inst.y].value
         self.vf.value = vy_value & 1
         new_vx = vy_value >> 1
-        print(vy_value)
         self.v[inst.x].value = new_vx
         self.inc_pc()
 
