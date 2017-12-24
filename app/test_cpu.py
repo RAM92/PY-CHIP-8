@@ -490,6 +490,11 @@ class TestOpCodes():
         cpu(0xD984)
         assert cpu.vf.value == 0
 
+    # 00E0
+    def test_clear_screen(self, cpu):
+        cpu(0x00E0)
+        cpu.screen.clear.assert_called_once()
+
 
 class TestOpcodeDefinitionMapper:
 

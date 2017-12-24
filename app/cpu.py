@@ -191,6 +191,7 @@ class CPU(object):
             OperationDefinition('FX65', self.memory_to_v0_to_vx),
 
             OperationDefinition('DXYN', self.draw_sprite),
+            OperationDefinition('00E0', self.clear_screen),
 
             OperationDefinition('0NNN', self.unsupported_operation),
         )
@@ -356,6 +357,10 @@ class CPU(object):
         sprite_data = self.memory[self.i.value:self.i.value + inst.n]
         new_vf = self.screen.write_sprite(inst.x, inst.y, sprite_data)
         self.bool_vf(new_vf)
+        self.inc_pc()
+
+    def clear_screen(self, inst: Instruction):
+        self.screen.clear()
         self.inc_pc()
 
     ###################################################################

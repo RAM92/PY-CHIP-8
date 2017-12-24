@@ -108,6 +108,9 @@ FONT = [
 class VirtualScreen:
 
     def __init__(self):
+        self._write_pixels()
+
+    def _write_pixels(self):
         self.pixels = [([False] * SCREEN_HEIGHT) for i in range(SCREEN_WIDTH)]
 
     def write_sprite(self, x, y, sprite_data: list):
@@ -134,6 +137,9 @@ class VirtualScreen:
 
         return previous_pixel_value is True and on is False
 
+    def clear(self):
+        self._write_pixels()
+
 
 _screen = None
 
@@ -154,7 +160,6 @@ class _Screen(VirtualScreen):
         self.stdscr = stdscr
 
         self.write_sprite(0, 0, FONT[0xa * 5:0xa * 5 + 5])
-
         while True:
             pass
 
@@ -169,6 +174,11 @@ class _Screen(VirtualScreen):
 
     def refresh(self):
         self.stdscr.refresh()
+
+    def clear(self):
+        self.stdscr.clear()
+        self.refresh()
+        super().clear()
 
 
 def screen():
