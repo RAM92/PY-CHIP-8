@@ -192,6 +192,7 @@ class CPU(object):
 
             OperationDefinition('DXYN', self.draw_sprite),
             OperationDefinition('00E0', self.clear_screen),
+            OperationDefinition('FX29', self.set_i_to_font_for_vx),
 
             OperationDefinition('0NNN', self.unsupported_operation),
         )
@@ -361,6 +362,10 @@ class CPU(object):
 
     def clear_screen(self, inst: Instruction):
         self.screen.clear()
+        self.inc_pc()
+
+    def set_i_to_font_for_vx(self, inst: Instruction):
+        self.i.value = self.memory.sprite_for_int(self.v[inst.x].value)
         self.inc_pc()
 
     ###################################################################

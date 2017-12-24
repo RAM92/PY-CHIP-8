@@ -495,6 +495,12 @@ class TestOpCodes():
         cpu(0x00E0)
         cpu.screen.clear.assert_called_once()
 
+    # FX29
+    def test_i_to_font_for_vx(self, cpu):
+        cpu.v0.value = 0xa
+        cpu(0xF029)
+        assert cpu.i.value == 0xa * 5
+
 
 class TestOpcodeDefinitionMapper:
 

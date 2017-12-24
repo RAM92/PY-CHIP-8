@@ -141,7 +141,7 @@ class VirtualScreen:
         self._write_pixels()
 
 
-_screen = None
+screen_instance = None
 
 
 class _Screen(VirtualScreen):
@@ -182,4 +182,7 @@ class _Screen(VirtualScreen):
 
 
 def screen():
-    return _screen or _Screen()
+    if screen_instance:
+        return screen_instance
+    screen_instance = _Screen()
+    return screen_instance
