@@ -365,7 +365,7 @@ class CPU(object):
 
     def draw_sprite(self, inst: Instruction):
         sprite_data = self.memory[self.i.value:self.i.value + inst.n]
-        new_vf = self.screen.write_sprite(inst.x, inst.y, sprite_data)
+        new_vf = self.screen.write_sprite(self.v[inst.x].value, self.v[inst.y].value, sprite_data)
         self.bool_vf(new_vf)
         self.inc_pc()
 

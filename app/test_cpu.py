@@ -472,22 +472,24 @@ class TestOpCodes():
 
     # DXYN
     def test_draw_sprite(self, cpu):
+        cpu.v0.value = 10
+        cpu.v1.value = 20
         cpu.i.value = 0x200
         cpu.memory[0x200] = 1
         cpu.memory[0x201] = 2
         cpu.memory[0x202] = 3
         cpu.memory[0x203] = 4
-        cpu(0xD984)
-        cpu.screen.write_sprite.assert_called_once_with(9, 8, [1, 2, 3, 4])
+        cpu(0xD014)
+        cpu.screen.write_sprite.assert_called_once_with(10, 20, [1, 2, 3, 4])
 
     # DXYN
     def test_draw_sprite_sets_vf_if_write_sprite_returns_true(self, cpu):
         cpu.i.value = 0x200
         cpu.screen.write_sprite.return_value = True
-        cpu(0xD984)
+        cpu(0xD014)
         assert cpu.vf.value == 1
         cpu.screen.write_sprite.return_value = False
-        cpu(0xD984)
+        cpu(0xD014)
         assert cpu.vf.value == 0
 
     # 00E0
