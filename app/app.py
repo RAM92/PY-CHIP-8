@@ -11,8 +11,9 @@ import logging
 
 parser = argparse.ArgumentParser(description='Runs a CHIP-8 ROM.')
 parser.add_argument('rom', help='The path to a valid CHIP-8 ROM')
-parser.add_argument('-d', '--debug', help='show debug info while running', action='store_true')
+parser.add_argument('-d', '--debug', help='Log debug info to log.log', action='store_true')
 args = parser.parse_args()
+
 
 def main(stdscr):
     if args.debug:
