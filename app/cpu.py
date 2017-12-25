@@ -397,7 +397,9 @@ class CPU(object):
         for handler in self.supported_operations:
             success = handler(inst)
             if success:
-                break
+                return
+        self.unsupported_operation(inst)
+
 
     def __call__(self, x=None):
         if isinstance(x, int):
