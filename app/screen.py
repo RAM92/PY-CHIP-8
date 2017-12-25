@@ -134,6 +134,8 @@ class VirtualScreen:
         return return_value
 
     def write_pixel(self, x: int, y: int, on=False) -> bool:
+        x %= SCREEN_WIDTH
+        y %= SCREEN_HEIGHT
         previous_pixel_value = self.pixels[x][y]
         on = on != self.pixels[x][y]
         self.pixels[x][y] = on
