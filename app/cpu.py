@@ -208,6 +208,7 @@ class CPU(object):
             OperationDefinition('FX29', self.set_i_to_font_for_vx,          'Set I to the font character for VX'),
 
             OperationDefinition('FX0A', self.wait_for_keypad_store_in_vx,   'Wait for keypad input, store result in VX'),
+            OperationDefinition('EX9E', self.skip_if_vx_eq_key_pressed,     'Skip if VX == key pressed'),
 
             OperationDefinition('0NNN', self.unsupported_operation,         'Execute native code - UNSUPPORTED'),
         )
@@ -391,6 +392,9 @@ class CPU(object):
         if key_value is not None:
             self.v[inst.x].value = key_value
             self.inc_pc()
+
+    def skip_if_vx_eq_key_pressed(self, inst: Instruction):
+        self._double_inc_pc_when(self.v[inst.x].value == self.keypad.read_key())
 
     ###################################################################
 
