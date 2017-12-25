@@ -146,15 +146,13 @@ class VirtualScreen:
         self._write_pixels()
 
 
-screen_instance = None
-
-
-class _Screen(VirtualScreen):
+class Screen(VirtualScreen):
 
     def __init__(self, stdscr):
-        super(_Screen, self).__init__()
+        super(Screen, self).__init__()
         import curses
         if curses.LINES < SCREEN_HEIGHT or curses.COLS < SCREEN_WIDTH:
+            logger.fatal('Terminal width or height insufficient')
             raise RuntimeError('Terminal width or height insufficient!')
 
         stdscr.clear()
@@ -162,7 +160,7 @@ class _Screen(VirtualScreen):
         self.stdscr = stdscr
 
     def write_sprite(self, x, y, sprite_data: list) -> bool:
-        x = super(_Screen, self).write_sprite(x, y, sprite_data)
+        x = super(Screen, self).write_sprite(x, y, sprite_data)
         self.refresh()
         return x
 
@@ -170,7 +168,7 @@ class _Screen(VirtualScreen):
         x %= SCREEN_WIDTH
         y %= SCREEN_HEIGHT
         self.stdscr.addstr(y, x, FULL_BLOCK_CHAR if on else EMPTY_BLOCK_CHAR)
-        return super(_Screen, self).write_pixel(x, y, on)
+        return super(Screen, self).write_pixel(x, y, on)
 
     def refresh(self):
         self.stdscr.refresh()
@@ -179,11 +177,3 @@ class _Screen(VirtualScreen):
         self.stdscr.clear()
         self.refresh()
         super().clear()
-
-
-def screen(stdscr):
-    global screen_instance
-    if screen_instance:
-        return screen_instance
-    screen_instance = _Screen(stdscr)
-    return screen_instance

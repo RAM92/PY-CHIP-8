@@ -3,7 +3,8 @@ import argparse
 
 import time
 
-from screen import screen
+from screen import Screen
+from keypad import Keypad
 from cpu import CPU
 from curses import wrapper
 import logging
@@ -19,15 +20,19 @@ def main(stdscr):
     if args.debug:
         logging.basicConfig(filename='log.log', level=logging.DEBUG, filemode='w')
 
-    s = screen(stdscr)
-    cpu = CPU(s)
+    s = Screen(stdscr)
+    k = Keypad(stdscr)
+    cpu = CPU(s, k)
 
+    logging.info('Loading program %s', args.rom)
     with open(args.rom, 'rb') as f:
         cpu.load_program(f.read())
 
+    logging.info('Running CPU')
     while True:
         cpu()
         # time.sleep(0.1)
+
 try:
     wrapper(main)
 except KeyboardInterrupt:

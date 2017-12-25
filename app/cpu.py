@@ -4,6 +4,7 @@
 
 import random, datetime
 from screen import FONT, VirtualScreen
+from keypad import Keypad
 import math
 import logging
 
@@ -147,7 +148,7 @@ class CPU(object):
     #program starts at 0x200
     #big endian - MSB first!
 
-    def __init__(self, screen: VirtualScreen):
+    def __init__(self, screen: VirtualScreen, keypad: Keypad):
         self.v=[]
         self.pc=0x200
         self.memory = Memory()
@@ -156,6 +157,7 @@ class CPU(object):
         self.delay_timer = TimerRegister()
         self.sound_timer = TimerRegister()
         self.screen = screen
+        self.keypad = keypad
 
         for x in range(0, 16):
             r = Register()

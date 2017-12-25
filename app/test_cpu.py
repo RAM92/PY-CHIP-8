@@ -79,7 +79,8 @@ class TestMemory:
 @pytest.fixture
 def cpu():
     mock_screen = MagicMock()
-    return CPU(mock_screen)
+    mock_keypad = MagicMock()
+    return CPU(mock_screen, mock_keypad)
 
 
 class TestCPU:
