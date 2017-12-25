@@ -149,8 +149,8 @@ class CPU(object):
     #big endian - MSB first!
 
     def __init__(self, screen: VirtualScreen, keypad: Keypad):
-        self.v=[]
-        self.pc=0x200
+        self.v = []
+        self.pc = 0x200
         self.memory = Memory()
         self.i = IRegister()
         self.stack = []
@@ -206,6 +206,8 @@ class CPU(object):
             OperationDefinition('DXYN', self.draw_sprite,                   'Draw sprite at address I at VX VY'),
             OperationDefinition('00E0', self.clear_screen,                  'Clear the screen'),
             OperationDefinition('FX29', self.set_i_to_font_for_vx,          'Set I to the font character for VX'),
+
+            OperationDefinition('FX0A', self.wait_for_keypad_store_in_vx,   'Wait for keypad input, store result in VX'),
 
             OperationDefinition('0NNN', self.unsupported_operation,         'Execute native code - UNSUPPORTED'),
         )
@@ -383,6 +385,12 @@ class CPU(object):
     def set_i_to_font_for_vx(self, inst: Instruction):
         self.i.value = self.memory.sprite_for_int(self.v[inst.x].value)
         self.inc_pc()
+
+    def wait_for_keypad_store_in_vx(self, inst: Instruction):
+        key_value = self.keypad.read_key()
+        if key_value is not None:
+            self.v[inst.x].value = key_value
+            self.inc_pc()
 
     ###################################################################
 

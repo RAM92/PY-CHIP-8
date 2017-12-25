@@ -504,6 +504,24 @@ class TestOpCodes():
         cpu(0xF029)
         assert cpu.i.value == 0xa * 5
 
+    # FX0A
+    def test_wait_for_keypad_store_in_vx_does_not_increment_pc_when_none_returned(self, cpu):
+        cpu.keypad.read_key.return_value = None
+        cpu(0xF00A)
+        assert cpu.pc == 0x200
+
+    # FX0A
+    def test_wait_for_keypad_store_in_vx_does_increment_pc_when_value_returned(self, cpu):
+        cpu.keypad.read_key.return_value = 0xa
+        cpu(0xF00A)
+        assert cpu.pc == 0x202
+
+    # FX0A
+    def test_wait_for_keypad_store_in_vx_stores_in_vx(self, cpu):
+        cpu.keypad.read_key.return_value = 0xa
+        cpu(0xF00A)
+        assert cpu.v0.value == 0xa
+
 
 class TestOpcodeDefinitionMapper:
 
