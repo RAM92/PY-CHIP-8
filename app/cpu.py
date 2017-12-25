@@ -58,7 +58,6 @@ class TimerRegister(Register):
 
     def __init__(self):
         self.logger = logger.getChild(self.__class__.__name__)
-        super(TimerRegister, self).__init__()
 
     def get_value(self):
         now = datetime.datetime.now()
