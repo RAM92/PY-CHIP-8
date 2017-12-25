@@ -345,13 +345,13 @@ class TestOpCodes():
         cpu.pc = 0x500
         cpu.stack = [0x200, 0x300, 0x400]
         cpu(0x00EE)
-        assert cpu.pc == 0x400
+        assert cpu.pc == 0x402
         assert cpu.stack == [0x200, 0x300]
         cpu(0x00EE)
-        assert cpu.pc == 0x300
+        assert cpu.pc == 0x302
         assert cpu.stack == [0x200]
         cpu(0x00EE)
-        assert cpu.pc == 0x200
+        assert cpu.pc == 0x202
         assert cpu.stack == []
 
     # 0NNN

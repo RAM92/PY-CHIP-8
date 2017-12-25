@@ -57,18 +57,22 @@ class TimerRegister(Register):
     target_time = - float('inf')
 
     def __init__(self):
+        self.logger = logger.getChild(self.__class__.__name__)
         super(TimerRegister, self).__init__()
 
     def get_value(self):
         now = datetime.datetime.now()
         if now > self.target_time:
-            return 0
+            return_value = 0
         else:
-            return round((self.target_time - now).total_seconds())
+            return_value = round((self.target_time - now).total_seconds())
+        self.logger.debug('Returning value %s', return_value)
+        return return_value
 
     def set_value(self, x):
         x = self._normalize_other(x)
         self.target_time = datetime.datetime.now() + datetime.timedelta(seconds=x)
+        self.logger.debug('Target time set to %s', self.target_time)
 
     value = property(get_value, set_value)
 
@@ -91,7 +95,7 @@ class OperationDefinition:
     match_number = 0xffff
     mask = 0
 
-    def __init__(self, format_str, cb, description):
+    def __init__(self, format_str, cb, description=''):
         self.str = format_str
         self.description = description
         self.cb = cb
@@ -307,6 +311,7 @@ class CPU(object):
 
     def return_from_subroutine(self, inst):
         self.pop_stack()
+        self.inc_pc()
 
     def _double_inc_pc_when(self, condition):
         if condition:
