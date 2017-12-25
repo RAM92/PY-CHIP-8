@@ -91,8 +91,9 @@ class OperationDefinition:
     match_number = 0xffff
     mask = 0
 
-    def __init__(self, format_str, cb):
+    def __init__(self, format_str, cb, description):
         self.str = format_str
+        self.description = description
         self.cb = cb
 
         self.match_number = 0
@@ -112,7 +113,7 @@ class OperationDefinition:
 
     def __call__(self, inst: Instruction):
         if self.responds_to(inst.data):
-            logger.debug('Executing instruction for %s, with data %#x', self.str, inst.data)
+            logger.debug('Executing instruction for %s, with data %#x - %s', self.str, inst.data, self.description)
             self.cb(inst)
             return True
         else:
@@ -159,49 +160,49 @@ class CPU(object):
             self.__dict__['v' + format(x, 'x')] = r
 
         self.supported_operations = (
-            OperationDefinition('6XNN', self.store_nn_in_vx),
-            OperationDefinition('8XY0', self.store_vy_in_vx),
-            OperationDefinition('7XNN', self.add_nn_to_vx),
-            OperationDefinition('8XY4', self.add_vy_to_vx),
-            OperationDefinition('8XY5', self.subtract_vy_from_vx),
-            OperationDefinition('8XY7', self.store_vy_sub_vx_in_vx),
+            OperationDefinition('6XNN', self.store_nn_in_vx,                'Store NN in VX'),
+            OperationDefinition('8XY0', self.store_vy_in_vx,                'Store VY in VX'),
+            OperationDefinition('7XNN', self.add_nn_to_vx,                  'Add NN to VX'),
+            OperationDefinition('8XY4', self.add_vy_to_vx,                  'Add VY to VX'),
+            OperationDefinition('8XY5', self.subtract_vy_from_vx,           'Subtract VY from VX'),
+            OperationDefinition('8XY7', self.store_vy_sub_vx_in_vx,         'Store VY - VX in VX'),
 
-            OperationDefinition('8XY2', self.vx_and_vy_store_in_vx),
-            OperationDefinition('8XY1', self.vx_or_vy_store_in_vx),
-            OperationDefinition('8XY3', self.vx_xor_vy_store_in_vx),
+            OperationDefinition('8XY2', self.vx_and_vy_store_in_vx,         'Store VX & VY in VX'),
+            OperationDefinition('8XY1', self.vx_or_vy_store_in_vx,          'Store VX | VY in VX'),
+            OperationDefinition('8XY3', self.vx_xor_vy_store_in_vx,         'Store VX ^ VY in VX'),
 
-            OperationDefinition('8XY6', self.shift_vy_right_store_in_vx),
-            OperationDefinition('8XYE', self.shift_vy_left_store_in_vx),
+            OperationDefinition('8XY6', self.shift_vy_right_store_in_vx,    'Shift VY right, store in VX'),
+            OperationDefinition('8XYE', self.shift_vy_left_store_in_vx,     'Shift VY left, store in VX'),
 
-            OperationDefinition('CXNN', self.set_vx_random_masked),
+            OperationDefinition('CXNN', self.set_vx_random_masked,          'Set VX to random masked by NN'),
 
-            OperationDefinition('1NNN', self.jump_to_nnn),
-            OperationDefinition('BNNN', self.jump_to_nnn_plus_v0),
+            OperationDefinition('1NNN', self.jump_to_nnn,                   'Jump to NNN'),
+            OperationDefinition('BNNN', self.jump_to_nnn_plus_v0,           'Jump to NNN plus V0'),
 
-            OperationDefinition('2NNN', self.exec_subroutine),
-            OperationDefinition('00EE', self.return_from_subroutine),
+            OperationDefinition('2NNN', self.exec_subroutine,               'Execute subroutine at NNN'),
+            OperationDefinition('00EE', self.return_from_subroutine,        'Return from subroutine'),
 
-            OperationDefinition('3XNN', self.skip_vx_eq_nn),
-            OperationDefinition('5XY0', self.skip_vx_eq_vy),
-            OperationDefinition('4XNN', self.skip_vx_neq_nn),
-            OperationDefinition('9XY0', self.skip_vx_neq_vy),
+            OperationDefinition('3XNN', self.skip_vx_eq_nn,                 'Skip if VX == NN'),
+            OperationDefinition('5XY0', self.skip_vx_eq_vy,                 'Skip if VX == VY'),
+            OperationDefinition('4XNN', self.skip_vx_neq_nn,                'Skip if VX != NN'),
+            OperationDefinition('9XY0', self.skip_vx_neq_vy,                'Skip if VX != VY'),
 
-            OperationDefinition('FX15', self.set_delay_timer),
-            OperationDefinition('FX07', self.delay_timer_to_vx),
+            OperationDefinition('FX15', self.set_delay_timer,               'Set delay timer to VX'),
+            OperationDefinition('FX07', self.delay_timer_to_vx,             'Set VX to value in delay timer'),
 
-            OperationDefinition('ANNN', self.store_nnn_in_i),
-            OperationDefinition('FX1E', self.add_vx_to_i),
+            OperationDefinition('ANNN', self.store_nnn_in_i,                'Set I to NNN'),
+            OperationDefinition('FX1E', self.add_vx_to_i,                   'Add VX to I'),
 
-            OperationDefinition('FX33', self.convert_vx_to_bcd),
+            OperationDefinition('FX33', self.convert_vx_to_bcd,             'Store BCD of VX at I, I+1 and I+2'),
 
-            OperationDefinition('FX55', self.v0_to_vx_to_memory),
-            OperationDefinition('FX65', self.memory_to_v0_to_vx),
+            OperationDefinition('FX55', self.v0_to_vx_to_memory,            'Dump V0-VX at address I'),
+            OperationDefinition('FX65', self.memory_to_v0_to_vx,            'Restore V0-VX from address I'),
 
-            OperationDefinition('DXYN', self.draw_sprite),
-            OperationDefinition('00E0', self.clear_screen),
-            OperationDefinition('FX29', self.set_i_to_font_for_vx),
+            OperationDefinition('DXYN', self.draw_sprite,                   'Draw sprite at address I at VX VY'),
+            OperationDefinition('00E0', self.clear_screen,                  'Clear the screen'),
+            OperationDefinition('FX29', self.set_i_to_font_for_vx,          'Set I to the font character for VX'),
 
-            OperationDefinition('0NNN', self.unsupported_operation),
+            OperationDefinition('0NNN', self.unsupported_operation,         'Execute native code - UNSUPPORTED'),
         )
 
     def load_program(self, program):
