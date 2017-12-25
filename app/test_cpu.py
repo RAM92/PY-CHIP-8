@@ -536,6 +536,19 @@ class TestOpCodes():
         cpu(0xE09E)
         assert cpu.pc == 0x202
 
+    # EXA1
+    def test_skip_if_vx_neq_key_pressed__values_equal(self, cpu):
+        cpu.keypad.read_key.return_value = 0xf
+        cpu.v0.value = 0xf
+        cpu(0xE0A1)
+        assert cpu.pc == 0x202
+
+    # EXA1
+    def test_skip_if_vx_neq_key_pressed__values_not_equal(self, cpu):
+        cpu.keypad.read_key.return_value = 0xf
+        cpu.v0.value = 0
+        cpu(0xE0A1)
+        assert cpu.pc == 0x204
 
 class TestOpcodeDefinitionMapper:
 

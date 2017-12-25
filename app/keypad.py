@@ -1,7 +1,6 @@
 import logging
 
 logger = logging.getLogger(__name__)
-_keypad = None
 
 KEY_MAPPING = {
     '1': 0x1,
@@ -34,4 +33,6 @@ class Keypad:
             key = self.stdscr.getkey()
         except:
             key = None
-        return KEY_MAPPING.get(key, None)
+        return_value = KEY_MAPPING.get(key, None)
+        logger.debug('Returning value %s', return_value)
+        return return_value
