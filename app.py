@@ -3,9 +3,9 @@ import argparse
 
 import time
 
-from screen import Screen
-from keypad import Keypad
-from cpu import CPU
+from app.screen import Screen
+from app.keypad import Keypad
+from app.cpu import CPU
 from curses import wrapper
 import logging
 
@@ -31,7 +31,7 @@ def main(stdscr):
     logging.info('Running CPU')
     while True:
         cpu()
-        # time.sleep(0.1)
+        time.sleep(0.01)
 
 try:
     wrapper(main)

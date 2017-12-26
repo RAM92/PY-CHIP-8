@@ -3,8 +3,8 @@
 
 
 import random, datetime
-from screen import FONT, VirtualScreen
-from keypad import Keypad
+from .screen import FONT, VirtualScreen
+from .keypad import Keypad
 import math
 import logging
 
@@ -44,6 +44,9 @@ class Register(object):
 
     def __lt__(self, other):
         return self.value < self._normalize_other(other)
+
+    def __repr__(self):
+        return self.value.__repr__()
 
 
 class IRegister(Register):
