@@ -165,10 +165,11 @@ class Screen(VirtualScreen):
         return x
 
     def write_pixel(self, x: int, y: int, on=False) -> bool:
-        if x > SCREEN_WIDTH: return
-        if y > SCREEN_HEIGHT: return
-        self.stdscr.addstr(y, x, FULL_BLOCK_CHAR if on else EMPTY_BLOCK_CHAR)
-        return super(Screen, self).write_pixel(x, y, on)
+        if x >= SCREEN_WIDTH: return
+        if y >= SCREEN_HEIGHT: return
+        return_value = super(Screen, self).write_pixel(x, y, on)
+        self.stdscr.addstr(y, x, FULL_BLOCK_CHAR if self.pixels[x][y] else EMPTY_BLOCK_CHAR)
+        return return_value
 
     def refresh(self):
         self.stdscr.refresh()
