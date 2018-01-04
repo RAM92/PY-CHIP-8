@@ -46,7 +46,8 @@ class Register(object):
         return self.value < self._normalize_other(other)
 
     def __repr__(self):
-        return self.value.__repr__()
+        # return 'int: {0:d}  hex: {0:#x}  bin: {0:#b}'.format(self.value)
+        return '{0:#x}'.format(self.value)
 
 
 class IRegister(Register):
@@ -414,6 +415,9 @@ class CPU(object):
         return Instruction(data)
 
     def execute_instruction(self, inst: Instruction):
+        logger.debug('V Registers: %s', self.v)
+        logger.debug('I Register: %s', self.i)
+        logger.debug('Stack: %s', self.stack)
         for handler in self.supported_operations:
             success = handler(inst)
             if success:

@@ -165,8 +165,8 @@ class Screen(VirtualScreen):
         return x
 
     def write_pixel(self, x: int, y: int, on=False) -> bool:
-        x %= SCREEN_WIDTH
-        y %= SCREEN_HEIGHT
+        if x > SCREEN_WIDTH: return
+        if y > SCREEN_HEIGHT: return
         self.stdscr.addstr(y, x, FULL_BLOCK_CHAR if on else EMPTY_BLOCK_CHAR)
         return super(Screen, self).write_pixel(x, y, on)
 
