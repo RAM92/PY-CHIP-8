@@ -426,6 +426,13 @@ class TestOpCodes():
             cpu(0xf007)
             assert cpu.v0 == 0x12
 
+    # FX18
+    def test_set_sound_timer_to_vx(self, cpu):
+        with freeze_time(NICE_DATE):
+            cpu.v0.value = 0x12
+            cpu(0xf018)
+            assert cpu.sound_timer.value == 0x12
+
     # ANNN
     def test_store_nnn_in_i(self, cpu):
         cpu(0xA123)

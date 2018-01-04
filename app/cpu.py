@@ -197,6 +197,7 @@ class CPU(object):
             OperationDefinition('9XY0', self.skip_vx_neq_vy,                'Skip if VX != VY'),
 
             OperationDefinition('FX15', self.set_delay_timer,               'Set delay timer to VX'),
+            OperationDefinition('FX18', self.set_sound_timer,               'Set sound timer to VX'),
             OperationDefinition('FX07', self.delay_timer_to_vx,             'Set VX to value in delay timer'),
 
             OperationDefinition('ANNN', self.store_nnn_in_i,                'Set I to NNN'),
@@ -343,6 +344,10 @@ class CPU(object):
         self.delay_timer.value = self.v[inst.x]
         self.inc_pc()
 
+    def set_sound_timer(self, inst: Instruction):
+        self.sound_timer.value = self.v[inst.x]
+        self.inc_pc()
+
     def delay_timer_to_vx(self, inst: Instruction):
         self.v[inst.x].value = self.delay_timer.value
         self.inc_pc()
@@ -367,7 +372,7 @@ class CPU(object):
             self.memory[self.i.value + i] = v.value
             if i == inst.x:
                 break
-        self.i.value += inst.x + 1
+        # self.i.value += inst.x + 1
         self.inc_pc()
 
     def memory_to_v0_to_vx(self, inst: Instruction):
@@ -375,7 +380,7 @@ class CPU(object):
             v.value = self.memory[self.i.value + i]
             if i == inst.x:
                 break
-        self.i.value += inst.x + 1
+        # self.i.value += inst.x + 1
         self.inc_pc()
 
     def draw_sprite(self, inst: Instruction):
