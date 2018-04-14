@@ -2,5 +2,6 @@
 .idea/
 .vscode/
 env/
+roms/
 *.pyc
 log.log
