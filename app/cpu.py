@@ -1,6 +1,6 @@
 # Implemented according to:
 # http://mattmik.com/files/chip8/mastering/chip8.html
-
+# ...and whatever other docs I could find
 
 import random, datetime
 from .screen import FONT, VirtualScreen
@@ -79,7 +79,6 @@ class TimerRegister(Register):
         self.logger.debug('Target time set to %s', self.target_time)
 
     value = property(get_value, set_value)
-
 
 
 class Instruction(object):
@@ -168,6 +167,7 @@ class CPU(object):
             self.v.append(r)
             self.__dict__['v' + format(x, 'x')] = r
 
+        #                        ;-)    Woohoo Python!
         self.supported_operations = (
             OperationDefinition('6XNN', self.store_nn_in_vx,                'Store NN in VX'),
             OperationDefinition('8XY0', self.store_vy_in_vx,                'Store VY in VX'),
@@ -275,7 +275,7 @@ class CPU(object):
     def store_vy_sub_vx_in_vx(self, inst):
         # http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy7
         vy_pre_op = self.v[inst.y].value
-        self.v[inst.y].value = self.v[inst.x].value - vy_pre_op # This looks wrong!!!
+        self.v[inst.y].value = self.v[inst.x].value - vy_pre_op # todo: This looks wrong!!!
         self.bool_vf(self.v[inst.y].value > vy_pre_op)
         self.inc_pc()
 

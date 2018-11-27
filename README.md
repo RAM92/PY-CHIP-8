@@ -30,5 +30,7 @@ be pretty straight-forward, making for some excellent bed time programming.
 In addition to this, Python has a Curses library built right into it
 (for darwin and linux... sorry windows users!) with a very clean API,
 making this an excellent choice for implementing the graphics.
-Performance isn't even a consideration for this VM, as it only needs to
-operate at a laughable 60Hz.
+Performance isn't even a consideration for this VM, ~~as it only needs to
+operate at a laughable 60Hz.~~ EDIT: I'm not sure this is true, cannot
+remember where I got that figure from... but it can get away with being slow
+AF.

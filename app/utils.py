@@ -1,3 +1,4 @@
+# todo: Use this
 def with_logger(logger):
     def _with_logger(cls):
         class NewClass(cls):
