@@ -86,7 +86,7 @@ class Instruction(object):
 
     def __init__(self, data=0):
         self.data = data
-        self.f   = (data & 0xf000) >> 12 #f for "First nibble"
+        # self.f   = (data & 0xf000) >> 12 #f for "First nibble"
         self.x   = (data & 0x0f00) >> 8
         self.y   = (data & 0x00f0) >> 4
         self.n   =  data & 0x000f
@@ -107,14 +107,14 @@ class OperationDefinition:
         self.match_number = 0
         self.mask = 0
 
-        for i, ch in enumerate(reversed(format_str)):
+        for i, ch in enumerate(format_str):
             bit_position = i * 4
             try:
                 x = int(ch, 16)
-                self.mask |= (0xf << bit_position)
-                self.match_number |= (x << bit_position)
+                self.mask |= (0xf000 >> bit_position)
+                self.match_number |= (x << 12 - bit_position)
             except ValueError:
-                x = 0
+                pass
 
     def responds_to(self, x):
         return x & self.mask == self.match_number
@@ -273,8 +273,9 @@ class CPU(object):
         self.inc_pc()
 
     def store_vy_sub_vx_in_vx(self, inst):
+        # http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#8xy7
         vy_pre_op = self.v[inst.y].value
-        self.v[inst.y].value = self.v[inst.x].value - vy_pre_op
+        self.v[inst.y].value = self.v[inst.x].value - vy_pre_op # This looks wrong!!!
         self.bool_vf(self.v[inst.y].value > vy_pre_op)
         self.inc_pc()
 
@@ -357,14 +358,15 @@ class CPU(object):
         self.inc_pc()
 
     def add_vx_to_i(self, inst: Instruction):
-        self.i.value += self.v[inst.x].value
+        self.i.value = self.v[inst.x].value + self.i.value
         self.inc_pc()
 
     def convert_vx_to_bcd(self, inst: Instruction):
-        x = self.bcd(self.v[inst.x].value)
-        self.memory[self.i.value + 0] = x[0]
-        self.memory[self.i.value + 1] = x[1]
-        self.memory[self.i.value + 2] = x[2]
+        if self.i.value + 2 >= len(self.memory):
+            x = self.bcd(self.v[inst.x].value)
+            self.memory[self.i.value + 0] = x[0]
+            self.memory[self.i.value + 1] = x[1]
+            self.memory[self.i.value + 2] = x[2]
         self.inc_pc()
 
     def v0_to_vx_to_memory(self, inst: Instruction):
