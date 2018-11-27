@@ -14,11 +14,11 @@ pip install -r requirements.txt
 ```
 
 ## Project motivation
-CHIP-8 is a simple virtual machine, used primarily for running simple
-games on old computers. It is also the de facto "first emulator project".
-Seeing as it has never existed in hardware format (other than a few FPGA
-implementations by hobbyists), a lot of the implementation details are
-left to the developer.
+[CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) is a simple virtual machine,
+used primarily for running simple games on old computers.
+It is also the de facto "first emulator project". Seeing as it has never
+existed in hardware format (other than a few FPGA implementations by hobbyists),
+a lot of the implementation details are left to the developer.
 
 ## Method Justification
 I had recently started working with Python, and this project was to give
