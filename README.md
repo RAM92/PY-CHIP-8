@@ -13,6 +13,12 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
+For usage instructions, run:
+
+```bash
+./app.py -h
+```
+
 ## Project motivation
 [CHIP-8](https://en.wikipedia.org/wiki/CHIP-8) is a simple virtual machine,
 used primarily for running simple games on old computers.
